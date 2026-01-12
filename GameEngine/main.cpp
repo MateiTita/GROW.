@@ -5,9 +5,9 @@
 #include "Model Loading\texture.h"
 #include "Model Loading\meshLoaderObj.h"
 
-void processKeyboardInput ();
+void processKeyboardInput();
 
-float deltaTime = 0.0f;	// time between current frame and last frame
+float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
 
 Window window("Game Engine", 800, 800);
@@ -20,18 +20,18 @@ int main()
 {
 	glClearColor(0.2f, 0.8f, 1.0f, 1.0f);
 
-	//building and compiling shader program
+	// building and compiling shader program
 	Shader shader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
 	Shader sunShader("Shaders/sun_vertex_shader.glsl", "Shaders/sun_fragment_shader.glsl");
 
-	//Textures
+	// Textures
 	GLuint tex = loadBMP("Resources/Textures/wood.bmp");
 	GLuint tex2 = loadBMP("Resources/Textures/rock.bmp");
 	GLuint tex3 = loadBMP("Resources/Textures/orange.bmp");
 
 	glEnable(GL_DEPTH_TEST);
 
-	//Test custom mesh loading
+	// Test custom mesh loading
 	std::vector<Vertex> vert;
 	vert.push_back(Vertex());
 	vert[0].pos = glm::vec3(10.5f, 10.5f, 0.0f);
@@ -54,8 +54,8 @@ int main()
 	vert[2].normals = glm::normalize(glm::cross(vert[3].pos - vert[2].pos, vert[1].pos - vert[2].pos));
 	vert[3].normals = glm::normalize(glm::cross(vert[0].pos - vert[3].pos, vert[2].pos - vert[3].pos));
 
-	std::vector<int> ind = { 0, 1, 3,   
-		1, 2, 3 };
+	std::vector<int> ind = {0, 1, 3,
+							1, 2, 3};
 
 	std::vector<Texture> textures;
 	textures.push_back(Texture());
@@ -72,7 +72,6 @@ int main()
 	textures3[0].id = tex3;
 	textures3[0].type = "texture_diffuse";
 
-
 	Mesh mesh(vert, ind, textures3);
 
 	// Create Obj files - easier :)
@@ -82,9 +81,9 @@ int main()
 	Mesh box = loader.loadObj("Resources/Models/cube.obj", textures);
 	Mesh plane = loader.loadObj("Resources/Models/plane.obj", textures3);
 
-	//check if we close the window or press the escape button
+	// check if we close the window or press the escape button
 	while (!window.isPressed(GLFW_KEY_ESCAPE) &&
-		glfwWindowShouldClose(window.getWindow()) == 0)
+		   glfwWindowShouldClose(window.getWindow()) == 0)
 	{
 		window.clear();
 		float currentFrame = glfwGetTime();
@@ -93,12 +92,12 @@ int main()
 
 		processKeyboardInput();
 
-		//test mouse input
+		// test mouse input
 		if (window.isMousePressed(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			std::cout << "Pressing mouse button" << std::endl;
 		}
-		 //// Code for the light ////
+		//// Code for the light ////
 
 		sunShader.use();
 
@@ -107,7 +106,7 @@ int main()
 
 		GLuint MatrixID = glGetUniformLocation(sunShader.getId(), "MVP");
 
-		//Test for one Obj loading = light source
+		// Test for one Obj loading = light source
 
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
 		ModelMatrix = glm::translate(ModelMatrix, lightPos);
@@ -154,7 +153,7 @@ void processKeyboardInput()
 {
 	float cameraSpeed = 30 * deltaTime;
 
-	//translation
+	// translation
 	if (window.isPressed(GLFW_KEY_W))
 		camera.keyboardMoveFront(cameraSpeed);
 	if (window.isPressed(GLFW_KEY_S))
@@ -168,7 +167,7 @@ void processKeyboardInput()
 	if (window.isPressed(GLFW_KEY_F))
 		camera.keyboardMoveDown(cameraSpeed);
 
-	//rotation
+	// rotation
 	if (window.isPressed(GLFW_KEY_LEFT))
 		camera.rotateOy(cameraSpeed);
 	if (window.isPressed(GLFW_KEY_RIGHT))
