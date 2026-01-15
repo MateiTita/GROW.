@@ -11,13 +11,16 @@ uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
+uniform vec3 waterColor;
+uniform float fogDensity;
+
 void main()
 {
-	// ============ AMBIENT ============
+	// AMBIENT 
 	float ka = 0.1;  
 	vec3 ambient = ka * lightColor;
 
-	// ============ DIFFUSE ============
+	//  DIFFUSE 
 	
 	vec3 normalVec = normalize(norm);
 	vec3 lightDir = normalize(lightPos - fragPos);
@@ -26,7 +29,7 @@ void main()
 	float diff = max(dot(normalVec, lightDir), 0.0);
 	vec3 diffuse = kd * diff * lightColor;
 
-	// ============ SPECULAR ============
+	//  SPECULAR 
 	
 	float ks = 0.5;  
 	
@@ -37,10 +40,19 @@ void main()
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	vec3 specular = ks * spec * lightColor;
 
-	// ============ COMBINE ALL ============
+	//  COMBINE ALL 
 	vec3 lighting = ambient + diffuse + specular;
 	vec4 objectColor = texture(texture1, textureCoord);
 	vec3 result = lighting * objectColor.rgb;
+
+	// UNDERWATER FOG 
+	// Objects fade into blue water color based on distance
+	float distance = length(viewPos - fragPos);
+	float fogFactor = exp(-fogDensity * distance);  // Exponential fog
+	fogFactor = clamp(fogFactor, 0.0, 1.0);
+	
+	// Mix between water color (far) and object color (close)
+	result = mix(waterColor, result, fogFactor);
 
 	fragColor = vec4(result, objectColor.a);
 }

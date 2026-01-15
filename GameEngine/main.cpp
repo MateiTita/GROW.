@@ -13,12 +13,17 @@ float lastFrame = 0.0f;
 Window window("Game Engine", 800, 800);
 Camera camera;
 
-glm::vec3 lightColor = glm::vec3(1.0f);
-glm::vec3 lightPos = glm::vec3(-180.0f, 100.0f, -200.0f);
+// Underwater lighting
+glm::vec3 lightColor = glm::vec3(0.8f, 0.9f, 1.0f);
+glm::vec3 lightPos = glm::vec3(0.0f, 200.0f, 0.0f);
+
+// Underwater fog 
+glm::vec3 waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Deep blue
+float fogDensity = 0.007f;  // How fast things fade (lower = see farther)
 
 int main()
 {
-	glClearColor(0.2f, 0.8f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.2f, 0.4f, 1.0f);
 
 	// building and compiling shader program
 	Shader shader("Shaders/vertex_shader.glsl", "Shaders/fragment_shader.glsl");
@@ -119,31 +124,90 @@ int main()
 
 		shader.use();
 
-		///// Test Obj files for box ////
 
 		GLuint MatrixID2 = glGetUniformLocation(shader.getId(), "MVP");
 		GLuint ModelMatrixID = glGetUniformLocation(shader.getId(), "model");
 
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		
 		glUniform3f(glGetUniformLocation(shader.getId(), "lightColor"), lightColor.x, lightColor.y, lightColor.z);
 		glUniform3f(glGetUniformLocation(shader.getId(), "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 		glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
+		glUniform3f(glGetUniformLocation(shader.getId(), "waterColor"), waterColor.x, waterColor.y, waterColor.z);
+		glUniform1f(glGetUniformLocation(shader.getId(), "fogDensity"), fogDensity);
 
-		box.draw(shader);
+		// UNDERWATER SCENE OBJECTS
 
-		///// Test plane Obj file //////
-
+		//SEAFLOOR 
 		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, -20.0f, 0.0f));
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, -50.0f, 0.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(20.0f, 1.0f, 20.0f));
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-
 		plane.draw(shader);
+
+		// ROCK 1 
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-30.0f, -45.0f, -20.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(8.0f, 5.0f, 8.0f));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		box.draw(shader);
+
+		//  ROCK 2 
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(40.0f, -47.0f, 30.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(6.0f, 4.0f, 7.0f));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		box.draw(shader);
+
+		// ROCK 3
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(15.0f, -48.0f, -50.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(5.0f, 3.0f, 5.0f));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		box.draw(shader);
+
+		//  CORAL 1 (tall) 
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-20.0f, -35.0f, -40.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(3.0f, 15.0f, 3.0f));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		box.draw(shader);
+
+		//  CORAL 2 
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(25.0f, -40.0f, -10.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(4.0f, 10.0f, 4.0f));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		box.draw(shader);
+
+		//  CORAL 3 
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-45.0f, -38.0f, 15.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(2.0f, 12.0f, 2.0f));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		box.draw(shader);
+
+		//  CORAL 4 
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(50.0f, -42.0f, -30.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(3.0f, 8.0f, 3.0f));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		box.draw(shader);
 
 		window.update();
 	}
