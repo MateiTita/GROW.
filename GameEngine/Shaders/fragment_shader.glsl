@@ -17,7 +17,7 @@ uniform float fogDensity;
 void main()
 {
 	// AMBIENT 
-	float ka = 0.1;  
+	float ka = 0.3;  
 	vec3 ambient = ka * lightColor;
 
 	//  DIFFUSE 

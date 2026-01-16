@@ -19,7 +19,7 @@ glm::vec3 lightPos = glm::vec3(0.0f, 200.0f, 0.0f);
 
 // Underwater fog 
 glm::vec3 waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Deep blue
-float fogDensity = 0.007f;  // How fast things fade (lower = see farther)
+float fogDensity = 0.004f;  // How fast things fade (lower = see farther)
 
 int main()
 {
@@ -33,6 +33,7 @@ int main()
 	GLuint tex = loadBMP("Resources/Textures/wood.bmp");
 	GLuint tex2 = loadBMP("Resources/Textures/rock.bmp");
 	GLuint tex3 = loadBMP("Resources/Textures/orange.bmp");
+	GLuint texGround = loadBMP("Resources/Textures/Ground.bmp");
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -67,6 +68,11 @@ int main()
 	textures[0].id = tex;
 	textures[0].type = "texture_diffuse";
 
+	std::vector<Texture> texturesGround;
+	texturesGround.push_back(Texture());
+	texturesGround[0].id = texGround;
+	texturesGround[0].type = "texture_diffuse";
+
 	std::vector<Texture> textures2;
 	textures2.push_back(Texture());
 	textures2[0].id = tex2;
@@ -83,8 +89,9 @@ int main()
 	// we can add here our textures :)
 	MeshLoaderObj loader;
 	Mesh sun = loader.loadObj("Resources/Models/sphere.obj");
-	Mesh box = loader.loadObj("Resources/Models/cube.obj", textures);
-	Mesh plane = loader.loadObj("Resources/Models/plane.obj", textures3);
+	Mesh rock = loader.loadObj("Resources/Models/cube.obj", textures2);   // Rock texture
+	Mesh coral = loader.loadObj("Resources/Models/cube.obj", textures3);  // Orange texture
+	Mesh plane = loader.loadObj("Resources/Models/plane.obj", texturesGround);
 
 	// check if we close the window or press the escape button
 	while (!window.isPressed(GLFW_KEY_ESCAPE) &&
@@ -153,7 +160,7 @@ int main()
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		box.draw(shader);
+		rock.draw(shader);
 
 		//  ROCK 2 
 		ModelMatrix = glm::mat4(1.0);
@@ -162,7 +169,7 @@ int main()
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		box.draw(shader);
+		rock.draw(shader);
 
 		// ROCK 3
 		ModelMatrix = glm::mat4(1.0);
@@ -171,7 +178,7 @@ int main()
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		box.draw(shader);
+		rock.draw(shader);
 
 		//  CORAL 1 (tall) 
 		ModelMatrix = glm::mat4(1.0);
@@ -180,7 +187,7 @@ int main()
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		box.draw(shader);
+		coral.draw(shader);
 
 		//  CORAL 2 
 		ModelMatrix = glm::mat4(1.0);
@@ -189,7 +196,7 @@ int main()
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		box.draw(shader);
+		coral.draw(shader);
 
 		//  CORAL 3 
 		ModelMatrix = glm::mat4(1.0);
@@ -198,7 +205,7 @@ int main()
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		box.draw(shader);
+		coral.draw(shader);
 
 		//  CORAL 4 
 		ModelMatrix = glm::mat4(1.0);
@@ -207,7 +214,7 @@ int main()
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		box.draw(shader);
+		coral.draw(shader);
 
 		window.update();
 	}
