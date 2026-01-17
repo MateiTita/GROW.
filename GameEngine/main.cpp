@@ -4,11 +4,15 @@
 #include "Model Loading\mesh.h"
 #include "Model Loading\texture.h"
 #include "Model Loading\meshLoaderObj.h"
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_glfw.h"
+#include "ImGUI/imgui_impl_opengl3.h"
 
 void processKeyboardInput();
 
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
+bool lowHealthMode = false;
 
 Window window("Game Engine", 800, 800);
 Camera camera;
@@ -36,6 +40,14 @@ int main()
 	GLuint texGround = loadBMP("Resources/Textures/Ground.bmp");
 
 	glEnable(GL_DEPTH_TEST);
+
+	// ImGui Setup
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window.getWindow(), true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Test custom mesh loading
 	std::vector<Vertex> vert;
@@ -98,6 +110,45 @@ int main()
 		   glfwWindowShouldClose(window.getWindow()) == 0)
 	{
 		window.clear();
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		// GUI Window
+		ImGui::Begin("GROW - Game Settings");
+
+		ImGui::Text("Fog Density: %.3f", fogDensity);
+
+		ImGui::Separator();
+
+		if (ImGui::Button("Increase Fog")) {
+			fogDensity += 0.002f;
+			if (fogDensity > 0.05f) fogDensity = 0.05f;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Decrease Fog")) {
+			fogDensity -= 0.002f;
+			if (fogDensity < 0.001f) fogDensity = 0.001f;
+		}
+
+		if (ImGui::Button("Low Health Mode")) {
+			lowHealthMode = !lowHealthMode;
+			if (lowHealthMode) {
+				waterColor = glm::vec3(0.5f, 0.0f, 0.0f);  // Red water
+			}
+			else {
+				waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Normal blue
+			}
+		}
+
+		if (lowHealthMode) {
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "ACTIVE");
+		}
+
+		ImGui::End();
+
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -216,8 +267,18 @@ int main()
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		coral.draw(shader);
 
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		window.update();
+
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	return 0;
 }
 
 void processKeyboardInput()
