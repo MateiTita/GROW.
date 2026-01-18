@@ -14,6 +14,12 @@ uniform vec3 viewPos;
 uniform vec3 waterColor;
 uniform float fogDensity;
 
+uniform vec3 spotlightPos;
+uniform vec3 spotlightDir;
+uniform vec3 spotlightColor;
+uniform float spotlightCutOff;
+uniform float spotlightOuterCutOff;
+
 void main()
 {
 	// AMBIENT 
@@ -40,8 +46,32 @@ void main()
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	vec3 specular = ks * spec * lightColor;
 
+	
+	// SPOTLIGHT 
+	
+	vec3 spotLightDir = normalize(spotlightPos - fragPos);
+	
+	// Check if fragment is inside the cone
+	float theta = dot(spotLightDir, normalize(-spotlightDir));
+	
+	// Calculate transition
+	float epsilon = spotlightCutOff - spotlightOuterCutOff;
+	float spotIntensity = clamp((theta - spotlightOuterCutOff) / epsilon, 0.0, 1.0);
+	
+	// Spotlight diffuse
+	float spotDiff = max(dot(normalVec, spotLightDir), 0.0);
+	vec3 spotDiffuse = kd * spotDiff * spotlightColor * spotIntensity;
+	
+	// Spotlight specular
+	vec3 spotReflectDir = reflect(-spotLightDir, normalVec);
+	float spotSpec = pow(max(dot(viewDir, spotReflectDir), 0.0), shininess);
+	vec3 spotSpecular = ks * spotSpec * spotlightColor * spotIntensity;
+	
+	// Total spotlight contribution
+	vec3 spotlight = spotDiffuse + spotSpecular;
+
 	//  COMBINE ALL 
-	vec3 lighting = ambient + diffuse + specular;
+	vec3 lighting = ambient + diffuse + specular + spotlight;
 	vec4 objectColor = texture(texture1, textureCoord);
 	vec3 result = lighting * objectColor.rgb;
 

@@ -21,6 +21,13 @@ Camera camera;
 glm::vec3 lightColor = glm::vec3(0.8f, 0.9f, 1.0f);
 glm::vec3 lightPos = glm::vec3(0.0f, 200.0f, 0.0f);
 
+// Spotlight
+glm::vec3 spotlightPos = glm::vec3(0.0f, 0.0f, 0.0f);           // Position of spotlight
+glm::vec3 spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);          // Direction (pointing down)
+glm::vec3 spotlightColor = glm::vec3(1.0f, 1.0f, 0.8f);         // Warm yellow color
+float spotlightCutOff = glm::cos(glm::radians(15.0f));          // Inner cone angle
+float spotlightOuterCutOff = glm::cos(glm::radians(25.0f));     // Outer cone angle
+
 // Underwater fog 
 glm::vec3 waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Deep blue
 float fogDensity = 0.004f;  // How fast things fade (lower = see farther)
@@ -192,6 +199,12 @@ int main()
 		glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 		glUniform3f(glGetUniformLocation(shader.getId(), "waterColor"), waterColor.x, waterColor.y, waterColor.z);
 		glUniform1f(glGetUniformLocation(shader.getId(), "fogDensity"), fogDensity);
+
+		glUniform3f(glGetUniformLocation(shader.getId(), "spotlightPos"), spotlightPos.x, spotlightPos.y, spotlightPos.z);
+		glUniform3f(glGetUniformLocation(shader.getId(), "spotlightDir"), spotlightDir.x, spotlightDir.y, spotlightDir.z);
+		glUniform3f(glGetUniformLocation(shader.getId(), "spotlightColor"), spotlightColor.x, spotlightColor.y, spotlightColor.z);
+		glUniform1f(glGetUniformLocation(shader.getId(), "spotlightCutOff"), spotlightCutOff);
+		glUniform1f(glGetUniformLocation(shader.getId(), "spotlightOuterCutOff"), spotlightOuterCutOff);
 
 		// UNDERWATER SCENE OBJECTS
 
