@@ -7,6 +7,7 @@
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_glfw.h"
 #include "ImGUI/imgui_impl_opengl3.h"
+#include "Player/Player.h"
 
 void processKeyboardInput();
 
@@ -16,6 +17,7 @@ bool lowHealthMode = false;
 
 Window window("Game Engine", 800, 800);
 Camera camera;
+Player* player;
 
 // Underwater lighting
 glm::vec3 lightColor = glm::vec3(0.8f, 0.9f, 1.0f);
@@ -111,6 +113,10 @@ int main()
 	Mesh rock = loader.loadObj("Resources/Models/cube.obj", textures2);   // Rock texture
 	Mesh coral = loader.loadObj("Resources/Models/cube.obj", textures3);  // Orange texture
 	Mesh plane = loader.loadObj("Resources/Models/plane.obj", texturesGround);
+	Mesh fish = loader.loadObj("Resources/Models/cube.obj", textures2);
+
+	player = new Player(&fish, glm::vec3(0.0f, -40.0f, 0.0f));
+
 
 	// check if we close the window or press the escape button
 	while (!window.isPressed(GLFW_KEY_ESCAPE) &&
@@ -161,6 +167,8 @@ int main()
 		lastFrame = currentFrame;
 
 		processKeyboardInput();
+
+		player->Update(deltaTime);
 
 		// test mouse input
 		if (window.isMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -280,6 +288,16 @@ int main()
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		coral.draw(shader);
 
+		ModelMatrix = glm::mat4(1.0);
+		ModelMatrix = glm::translate(ModelMatrix, player->position);
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.0f));
+
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+		player->Draw(shader);
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -296,21 +314,46 @@ int main()
 
 void processKeyboardInput()
 {
-	float cameraSpeed = 30 * deltaTime;
+	
+	float playerSpeed = 30.0f * deltaTime;
 
-	// translation
+	if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
+	{
+		player->Dash();
+	}
+
+	if (player->isDashing)
+	{
+		playerSpeed *= 5.0f;
+	}
+
+	glm::vec3 forward = camera.getCameraViewDirection();
+
+	// We use the camera's Up vector to ensure it's relative to the camera
+	glm::vec3 right = glm::normalize(glm::cross(forward, camera.getCameraUp()));
+
+	// Player Movement
 	if (window.isPressed(GLFW_KEY_W))
-		camera.keyboardMoveFront(cameraSpeed);
+		player->position += forward * playerSpeed;
 	if (window.isPressed(GLFW_KEY_S))
-		camera.keyboardMoveBack(cameraSpeed);
+		player->position -= forward * playerSpeed;
 	if (window.isPressed(GLFW_KEY_A))
-		camera.keyboardMoveLeft(cameraSpeed);
+		player->position -= right * playerSpeed;
 	if (window.isPressed(GLFW_KEY_D))
-		camera.keyboardMoveRight(cameraSpeed);
-	if (window.isPressed(GLFW_KEY_R))
-		camera.keyboardMoveUp(cameraSpeed);
-	if (window.isPressed(GLFW_KEY_F))
-		camera.keyboardMoveDown(cameraSpeed);
+		player->position += right * playerSpeed;
+
+	// 4. Swim Up/Down
+	if (window.isPressed(GLFW_KEY_SPACE))
+		player->position.y += playerSpeed;
+	if (window.isPressed(GLFW_KEY_LEFT_CONTROL))
+		player->position.y -= playerSpeed;
+
+	// Camera Rotation Controls (Keep these to look around)
+	float rotSpeed = 30.0f * deltaTime;
+	if (window.isPressed(GLFW_KEY_LEFT)) camera.rotateOy(rotSpeed);
+	if (window.isPressed(GLFW_KEY_RIGHT)) camera.rotateOy(-rotSpeed);
+	if (window.isPressed(GLFW_KEY_UP)) camera.rotateOx(rotSpeed);
+	if (window.isPressed(GLFW_KEY_DOWN)) camera.rotateOx(-rotSpeed);
 
 	float groundLevel = -45.0f;  // above -50 
 	glm::vec3 pos = camera.getCameraPosition();
@@ -319,13 +362,4 @@ void processKeyboardInput()
 		camera.setCameraPosition(glm::vec3(pos.x, groundLevel, pos.z));
 	}
 
-	// rotation
-	if (window.isPressed(GLFW_KEY_LEFT))
-		camera.rotateOy(cameraSpeed);
-	if (window.isPressed(GLFW_KEY_RIGHT))
-		camera.rotateOy(-cameraSpeed);
-	if (window.isPressed(GLFW_KEY_UP))
-		camera.rotateOx(cameraSpeed);
-	if (window.isPressed(GLFW_KEY_DOWN))
-		camera.rotateOx(-cameraSpeed);
 }

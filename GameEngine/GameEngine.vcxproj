@@ -78,6 +78,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -119,35 +120,64 @@
   <ItemGroup>
     <ClCompile Include="Camera\camera.cpp" />
     <ClCompile Include="Graphics\window.cpp" />
+    <ClCompile Include="ImGUI\imgui.cpp" />
+    <ClCompile Include="ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="ImGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="ImGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model Loading\meshLoaderObj.cpp" />
     <ClCompile Include="Model Loading\mesh.cpp" />
+    <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Shaders\shader.cpp" />
     <ClCompile Include="Model Loading\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\camera.h" />
     <ClInclude Include="Graphics\window.h" />
+    <ClInclude Include="ImGUI\imconfig.h" />
+    <ClInclude Include="ImGUI\imgui.h" />
+    <ClInclude Include="ImGUI\imgui_impl_glfw.h" />
+    <ClInclude Include="ImGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="ImGUI\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="ImGUI\imgui_internal.h" />
+    <ClInclude Include="ImGUI\imstb_rectpack.h" />
+    <ClInclude Include="ImGUI\imstb_textedit.h" />
+    <ClInclude Include="ImGUI\imstb_truetype.h" />
     <ClInclude Include="Model Loading\meshLoaderObj.h" />
     <ClInclude Include="Model Loading\mesh.h" />
     <ClInclude Include="Model Loading\stringTokenizer.h" />
-    <ClInclude Include="Shaders\shader.h" />
+    <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Model Loading\texture.h" />
+    <ClInclude Include="Shaders\shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Debug\assimpd.dll" />
+    <None Include="Debug\GameEngine.exe.recipe" />
     <None Include="Shaders\fragment_shader.glsl" />
     <None Include="Shaders\sun_fragment_shader.glsl" />
     <None Include="Shaders\sun_vertex_shader.glsl" />
     <None Include="Shaders\vertex_shader.glsl" />
+    <None Include="x64\Debug\GameEngine.tlog\CL.command.1.tlog" />
+    <None Include="x64\Debug\GameEngine.tlog\GameEngine.lastbuildstate" />
+    <None Include="x64\Debug\GameEngine.tlog\unsuccessfulbuild" />
+    <None Include="x64\Debug\vc142.idb" />
+    <None Include="x64\Debug\vc142.pdb" />
+    <None Include="x64\Debug\vc143.idb" />
+    <None Include="x64\Debug\vc143.pdb" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\Textures\Ground.bmp" />
+    <Image Include="Resources\Textures\orange.bmp" />
     <Image Include="Resources\Textures\rock.bmp" />
     <Image Include="Resources\Textures\wood.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Resources\Models\sphere.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </Object>
+    <Text Include="Debug\GameEngine.Build.CppClean.log" />
+    <Text Include="Debug\GameEngine.log" />
+    <Text Include="Debug\GameEngine.vcxproj.FileListAbsolute.txt" />
+    <Text Include="x64\Debug\GameEngine.log" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

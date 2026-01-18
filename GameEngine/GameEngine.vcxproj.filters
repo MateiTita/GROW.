@@ -36,12 +36,30 @@
     <ClCompile Include="Model Loading\meshLoaderObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImGUI\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_impl_glfw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_impl_opengl3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera\camera.h">
@@ -59,12 +77,54 @@
     <ClInclude Include="Model Loading\stringTokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImGUI\imconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_impl_glfw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_impl_opengl3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_impl_opengl3_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_rectpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_textedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\vertex_shader.glsl" />
     <None Include="Shaders\fragment_shader.glsl" />
     <None Include="Shaders\sun_fragment_shader.glsl" />
     <None Include="Shaders\sun_vertex_shader.glsl" />
+    <None Include="x64\Debug\vc143.pdb" />
+    <None Include="x64\Debug\vc143.idb" />
+    <None Include="x64\Debug\vc142.pdb" />
+    <None Include="x64\Debug\vc142.idb" />
+    <None Include="x64\Debug\GameEngine.tlog\CL.command.1.tlog" />
+    <None Include="x64\Debug\GameEngine.tlog\unsuccessfulbuild" />
+    <None Include="x64\Debug\GameEngine.tlog\GameEngine.lastbuildstate" />
+    <None Include="Debug\assimpd.dll" />
+    <None Include="Debug\GameEngine.exe.recipe" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Textures\wood.bmp">
@@ -73,8 +133,17 @@
     <Image Include="Resources\Textures\rock.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\Textures\Ground.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\orange.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Resources\Models\sphere.obj" />
+    <Text Include="x64\Debug\GameEngine.log" />
+    <Text Include="Debug\GameEngine.Build.CppClean.log" />
+    <Text Include="Debug\GameEngine.log" />
+    <Text Include="Debug\GameEngine.vcxproj.FileListAbsolute.txt" />
   </ItemGroup>
 </Project>

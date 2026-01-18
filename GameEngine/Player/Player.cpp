@@ -7,28 +7,46 @@ Player::Player(Mesh *mesh, glm::vec3 startPosition)
 
     this->size = 1.0f;
     this->health = 100.0f;
+    this->isDashing = false;
+    this->dashTimer = 0.0f;
+    this->dashCooldown = 0.0f;
 }
 
 Player::~Player()
 {
 }
 
-void Player::Update()
+void Player::Update(float deltaTime)
 {
+    if (isDashing)
+    {
+        dashTimer -= deltaTime;
+        if (dashTimer <= 0.0f)
+        {
+            isDashing = false;
+        }
+    }
+
+    if (dashCooldown > 0.0f)
+    {
+        dashCooldown -= deltaTime;
+    }
 }
 
-void Player::Draw(Shader shader)
+void Player::Draw(Shader &shader)
 {
-    glm::mat4 model = glm::mat4(1.0f);
-
-    model = glm::translate(model, position);
-
-    model = glm::scale(model, glm::vec3(size));
-
-    glUniformMatrix4fv(glGetUniformLocation(shader.getId(), "model"), 1, GL_FALSE, &model[0][0]);
-
     if (mesh != nullptr)
     {
         mesh->draw(shader);
+    }
+}
+
+void Player::Dash()
+{
+    if (dashCooldown <= 0.0f)
+    {
+        isDashing = true;
+        dashTimer = 0.2f;
+        dashCooldown = 2.0f;
     }
 }

@@ -1,29 +1,29 @@
 ﻿  camera.cpp
-D:\Game_Project\GROW\GameEngine\Camera\camera.h(3,10): error C1083: Cannot open include file: 'glm.hpp': No such file or directory
+C:\Users\vlada\Documents\GROW\GameEngine\Camera\camera.h(3,10): error C1083: Cannot open include file: 'glm.hpp': No such file or directory
   (compiling source file 'Camera/camera.cpp')
   
   window.cpp
-D:\Game_Project\GROW\GameEngine\Graphics\window.h(2,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
+C:\Users\vlada\Documents\GROW\GameEngine\Graphics\window.h(2,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
   (compiling source file 'Graphics/window.cpp')
   
   main.cpp
-D:\Game_Project\GROW\GameEngine\Graphics\window.h(2,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
+C:\Users\vlada\Documents\GROW\GameEngine\Graphics\window.h(2,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
   (compiling source file 'main.cpp')
   
   meshLoaderObj.cpp
-D:\Game_Project\GROW\GameEngine\Model Loading\meshLoaderObj.h(4,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
+C:\Users\vlada\Documents\GROW\GameEngine\Model Loading\meshLoaderObj.h(4,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
   (compiling source file 'Model%20Loading/meshLoaderObj.cpp')
   
   mesh.cpp
-D:\Game_Project\GROW\GameEngine\Model Loading\mesh.h(2,10): error C1083: Cannot open include file: 'glm.hpp': No such file or directory
+C:\Users\vlada\Documents\GROW\GameEngine\Model Loading\mesh.h(2,10): error C1083: Cannot open include file: 'glm.hpp': No such file or directory
   (compiling source file 'Model%20Loading/mesh.cpp')
   
   shader.cpp
-D:\Game_Project\GROW\GameEngine\Shaders\shader.h(3,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
+C:\Users\vlada\Documents\GROW\GameEngine\Shaders\shader.h(3,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
   (compiling source file 'Shaders/shader.cpp')
   
   texture.cpp
-D:\Game_Project\GROW\GameEngine\Model Loading\texture.h(2,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
+C:\Users\vlada\Documents\GROW\GameEngine\Model Loading\texture.h(2,10): error C1083: Cannot open include file: 'glew.h': No such file or directory
   (compiling source file 'Model%20Loading/texture.cpp')
   
   Generating Code...
