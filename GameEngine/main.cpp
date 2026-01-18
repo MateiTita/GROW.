@@ -312,6 +312,13 @@ void processKeyboardInput()
 	if (window.isPressed(GLFW_KEY_F))
 		camera.keyboardMoveDown(cameraSpeed);
 
+	float groundLevel = -45.0f;  // above -50 
+	glm::vec3 pos = camera.getCameraPosition();
+	if (pos.y < groundLevel)
+	{
+		camera.setCameraPosition(glm::vec3(pos.x, groundLevel, pos.z));
+	}
+
 	// rotation
 	if (window.isPressed(GLFW_KEY_LEFT))
 		camera.rotateOy(cameraSpeed);
