@@ -37,6 +37,14 @@ float fogDensity = 0.004f;  // How fast things fade (lower = see farther)
 // Third-person camera offset
 glm::vec3 cameraOffset = glm::vec3(0.0f, 10.0f, 30.0f);
 
+int currentTask = 0;
+bool pressedW = false;
+bool pressedA = false;
+bool pressedS = false;
+bool pressedD = false;
+bool usedDash = false;
+const int totalTasks = 2;
+
 int main()
 {
 	glClearColor(0.0f, 0.2f, 0.4f, 1.0f);
@@ -151,16 +159,42 @@ int main()
 		if (ImGui::Button("Low Health Mode")) {
 			lowHealthMode = !lowHealthMode;
 			if (lowHealthMode) {
-				waterColor = glm::vec3(0.5f, 0.0f, 0.0f);  // Red water
+				waterColor = glm::vec3(0.5f, 0.0f, 0.0f);
 			}
 			else {
-				waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Normal blue
+				waterColor = glm::vec3(0.0f, 0.3f, 0.5f);
 			}
 		}
 
 		if (lowHealthMode) {
 			ImGui::SameLine();
 			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "ACTIVE");
+		}
+
+		// Task System Display
+		ImGui::Separator();
+		ImGui::Text("=== TASKS ===");
+
+		if (currentTask == 0)
+		{
+			ImGui::Text("Task 1: Learn to swim!");
+			ImGui::Text("Press W, A, S, D to move.");
+			ImGui::Text("Progress: %s %s %s %s",
+				pressedW ? "[W]" : "[ ]",
+				pressedA ? "[A]" : "[ ]",
+				pressedS ? "[S]" : "[ ]",
+				pressedD ? "[D]" : "[ ]");
+		}
+		else if (currentTask == 1)
+		{
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
+			ImGui::Text("Task 2: Use your dash!");
+			ImGui::Text("Press SHIFT to dash.");
+		}
+		else if (currentTask >= totalTasks)
+		{
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
 		}
 
 		ImGui::End();
@@ -330,6 +364,10 @@ void processKeyboardInput()
 	if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
 	{
 		player->Dash();
+		if (player->isDashing)
+		{
+			usedDash = true;
+		}
 	}
 
 	if (player->isDashing)
@@ -344,13 +382,25 @@ void processKeyboardInput()
 
 	// Player Movement
 	if (window.isPressed(GLFW_KEY_W))
+	{
 		player->position += forward * playerSpeed;
+		pressedW = true;
+	}
 	if (window.isPressed(GLFW_KEY_S))
+	{
 		player->position -= forward * playerSpeed;
+		pressedS = true;
+	}
 	if (window.isPressed(GLFW_KEY_A))
+	{
 		player->position -= right * playerSpeed;
+		pressedA = true;
+	}
 	if (window.isPressed(GLFW_KEY_D))
+	{
 		player->position += right * playerSpeed;
+		pressedD = true;
+	}
 
 	// 4. Swim Up/Down
 	if (window.isPressed(GLFW_KEY_SPACE))
@@ -370,6 +420,23 @@ void processKeyboardInput()
 	if (player->position.y < groundLevel)
 	{
 		player->position.y = groundLevel;
+	}
+
+	if (currentTask == 0)
+	{
+		// Task 1: Check if all WASD keys have been pressed
+		if (pressedW && pressedA && pressedS && pressedD)
+		{
+			currentTask = 1;
+		}
+	}
+	else if (currentTask == 1)
+	{
+		// Task 2: Check if dash was used
+		if (usedDash)
+		{
+			currentTask = 2;
+		}
 	}
 
 }
