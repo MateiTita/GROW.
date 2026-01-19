@@ -34,6 +34,9 @@ float spotlightOuterCutOff = glm::cos(glm::radians(25.0f));     // Outer cone an
 glm::vec3 waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Deep blue
 float fogDensity = 0.004f;  // How fast things fade (lower = see farther)
 
+// Third-person camera offset
+glm::vec3 cameraOffset = glm::vec3(0.0f, 10.0f, 30.0f);
+
 int main()
 {
 	glClearColor(0.0f, 0.2f, 0.4f, 1.0f);
@@ -168,7 +171,14 @@ int main()
 
 		processKeyboardInput();
 
+
 		player->Update(deltaTime);
+
+		glm::vec3 newCameraPos = player->position + cameraOffset;
+		camera.setCameraPosition(newCameraPos);
+		// Make camera look at player
+		glm::vec3 directionToPlayer = player->position - camera.getCameraPosition();
+		camera.setViewDirection(directionToPlayer);
 
 		// test mouse input
 		if (window.isMousePressed(GLFW_MOUSE_BUTTON_LEFT))
@@ -357,9 +367,9 @@ void processKeyboardInput()
 
 	float groundLevel = -45.0f;  // above -50 
 	glm::vec3 pos = camera.getCameraPosition();
-	if (pos.y < groundLevel)
+	if (player->position.y < groundLevel)
 	{
-		camera.setCameraPosition(glm::vec3(pos.x, groundLevel, pos.z));
+		player->position.y = groundLevel;
 	}
 
 }
