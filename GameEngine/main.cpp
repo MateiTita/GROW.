@@ -124,7 +124,7 @@ int main()
 	Mesh rock = loader.loadObj("Resources/Models/cube.obj", textures2);   // Rock texture
 	Mesh coral = loader.loadObj("Resources/Models/cube.obj", textures3);  // Orange texture
 	Mesh plane = loader.loadObj("Resources/Models/plane.obj", texturesGround);
-	Mesh fish = loader.loadObj("Resources/Models/cube.obj", textures2);
+	Mesh fish = loader.loadObj("Resources/Models/fish.obj", textures3);
 
 	player = new Player(&fish, glm::vec3(0.0f, -40.0f, 0.0f));
 

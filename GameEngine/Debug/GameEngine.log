@@ -1,5 +1,3 @@
-﻿  Player.cpp
-  main.cpp
-C:\Users\vlada\Documents\GROW\GameEngine\main.cpp(165,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Generating Code...
-  GameEngine.vcxproj -> C:\Users\vlada\Documents\GROW\Debug\GameEngine.exe
+﻿  main.cpp
+C:\Users\Razvan\Desktop\grow1\GameEngine\main.cpp(202,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  GameEngine.vcxproj -> C:\Users\Razvan\Desktop\grow1\Debug\GameEngine.exe
