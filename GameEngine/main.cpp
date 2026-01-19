@@ -45,6 +45,7 @@ bool pressedD = false;
 bool usedDash = false;
 const int totalTasks = 2;
 
+
 int main()
 {
 	glClearColor(0.0f, 0.2f, 0.4f, 1.0f);
@@ -127,6 +128,7 @@ int main()
 	Mesh fish = loader.loadObj("Resources/Models/fish.obj", textures3);
 
 	player = new Player(&fish, glm::vec3(0.0f, -40.0f, 0.0f));
+
 
 
 	// check if we close the window or press the escape button
@@ -334,13 +336,14 @@ int main()
 
 		ModelMatrix = glm::mat4(1.0);
 		ModelMatrix = glm::translate(ModelMatrix, player->position);
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(4.0f));
 
 		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 
 		player->Draw(shader);
+
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -355,6 +358,7 @@ int main()
 
 	return 0;
 }
+
 
 void processKeyboardInput()
 {
