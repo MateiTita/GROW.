@@ -59,6 +59,8 @@ int main()
 	GLuint tex2 = loadBMP("Resources/Textures/rock.bmp");
 	GLuint tex3 = loadBMP("Resources/Textures/orange.bmp");
 	GLuint texGround = loadBMP("Resources/Textures/Ground.bmp");
+	GLuint texTemple = loadBMP("Resources/Textures/templ.bmp");
+
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -116,6 +118,12 @@ int main()
 	textures3[0].id = tex3;
 	textures3[0].type = "texture_diffuse";
 
+	std::vector<Texture> texturesTemple;
+	texturesTemple.push_back(Texture());
+	texturesTemple[0].id = texTemple;
+	texturesTemple[0].type = "texture_diffuse";
+
+
 	Mesh mesh(vert, ind, textures3);
 
 	// Create Obj files - easier :)
@@ -126,8 +134,14 @@ int main()
 	Mesh coral = loader.loadObj("Resources/Models/cube.obj", textures3);  // Orange texture
 	Mesh plane = loader.loadObj("Resources/Models/plane.obj", texturesGround);
 	Mesh fish = loader.loadObj("Resources/Models/fish.obj", textures3);
+	Mesh temple = loader.loadObj("Resources/Models/temple.obj", texturesTemple);
+
 
 	player = new Player(&fish, glm::vec3(0.0f, -40.0f, 0.0f));
+	glm::vec3 templePos = glm::vec3(0.0f, -50.0f, -120.0f);
+	glm::vec3 templeScale = glm::vec3(50.0f, 50.0f, 50.0f);
+
+
 
 
 
@@ -270,6 +284,15 @@ int main()
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		plane.draw(shader);
+
+		// TEMPLE 
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, templePos);
+		ModelMatrix = glm::scale(ModelMatrix, templeScale);
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		temple.draw(shader);
 
 		// ROCK 1 
 		ModelMatrix = glm::mat4(1.0);
