@@ -74,6 +74,11 @@ int main()
 	GLuint texTemple = loadBMP("Resources/Textures/templ.bmp");
 	GLuint texfishtoeat1 = loadBMP("Resources/Textures/fishtoeat1.bmp");
 	GLuint texshell = loadBMP("Resources/Textures/shell_basecolour.bmp");
+	GLuint texChest = loadBMP("Resources/Textures/chestt.bmp");
+
+
+
+
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -146,6 +151,16 @@ int main()
 	texturesFishtoeat1[0].id = texfishtoeat1;
 	texturesFishtoeat1[0].type = "texture_diffuse";
 
+	std::vector<Texture> texturesChest;
+	texturesChest.push_back(Texture());
+	texturesChest[0].id = texChest;
+	texturesChest[0].type = "texture_diffuse";
+
+	std::vector<Texture> texturesKey;
+	texturesKey.push_back(Texture());
+	texturesKey[0].id = tex3;
+	texturesKey[0].type = "texture_diffuse";
+
 
 	Mesh mesh(vert, ind, textures3);
 
@@ -161,6 +176,9 @@ int main()
 	Mesh fishtoeat = loader.loadObj("Resources/Models/fishtoeat1.obj", texturesFishtoeat1);
 	Mesh shell = loader.loadObj("Resources/Models/seashell_obj.obj", texturesShell);
 	Mesh canoe = loader.loadObj("Resources/Models/canoe.obj", textures);
+	Mesh chest = loader.loadObj("Resources/Models/chest.obj", texturesChest);
+	Mesh key = loader.loadObj("Resources/Models/key.obj", texturesKey);
+
 
 
 
@@ -169,6 +187,22 @@ int main()
 	glm::vec3 templePos = glm::vec3(0.0f, -50.0f, -620.0f);
 	glm::vec3 templeScale = glm::vec3(50.0f, 50.0f, 50.0f);
 
+	// ===== chest =====
+	glm::vec3 chestPos = glm::vec3(100.0f, -20.0f, -780.0f);
+	glm::vec3 chestScale = glm::vec3(6.0f, 6.0f, 6.0f);
+	float chestRotDeg = 0.0f;
+	glm::vec3 chestRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+	float chestFloatDistance = 5.0f; 
+	float chestFloatSpeed = 1.2f;
+
+	// ===== key =====
+	glm::vec3 keyPos = glm::vec3(350.0f, -27.0f, -380.0f);
+	glm::vec3 keyScale = glm::vec3(8.0f, 8.0f, 8.0f);
+	glm::vec3 keyRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+	float keyFloatDistance = 5.0f;
+	float keyFloatSpeed = 1.6f;
+	float keySpinSpeed =160.0f;
+	
 	// ===== FISH TO EAT =====
 	glm::vec3 fishtoeatPos = glm::vec3(140.0f, 120.0f, -80.0f);
 	glm::vec3 fishtoeatScale = glm::vec3(12.0f, 12.0f, 12.0f);
@@ -275,6 +309,7 @@ int main()
 
 		ImGui::End();
 
+		float t = (float)glfwGetTime();
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -374,7 +409,52 @@ int main()
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		temple.draw(shader);
 
-		
+
+		//Chest 
+
+		ModelMatrix = glm::mat4(1.0f);
+		float chestBob = sin(t * chestFloatSpeed) * chestFloatDistance;
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(chestPos.x, chestPos.y + chestBob, chestPos.z));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(chestRotDeg), chestRotAxis);
+		ModelMatrix = glm::scale(ModelMatrix, chestScale);
+
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+		chest.draw(shader);
+
+
+
+		//Key
+
+		ModelMatrix = glm::mat4(1.0f);
+		float keyBob = sin(t * keyFloatSpeed) * keyFloatDistance;
+		float keySpinDeg = t * keySpinSpeed * 10;
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(keyPos.x, keyPos.y + keyBob, keyPos.z));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(keySpinDeg), keyRotAxis);
+		ModelMatrix = glm::scale(ModelMatrix, keyScale);
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+		key.draw(shader);
+
+
+
+		//fishtoeat
+		glm::vec3 fishtoeatPositions[] = {
+			glm::vec3(-15.0f, 135.0f, -60.0f),
+			glm::vec3(20.0f, 130.0f, -90.0f),
+			glm::vec3(-40.0f, 125.0f, -120.0f),
+			glm::vec3(35.0f, 120.0f, -150.0f),
+			glm::vec3(0.0f, 128.0f, -180.0f),
+			glm::vec3(-15.0f, 85.0f, -60.0f),
+			glm::vec3(20.0f, 80.0f, -90.0f),
+			glm::vec3(-40.0f, 65.0f, -120.0f),
+			glm::vec3(35.0f, 75.0f, -150.0f),
+			glm::vec3(0.0f, 130.0f, -180.0f),
+		};
 
 		for (int i = 0; i < 10; i++)
 		{
