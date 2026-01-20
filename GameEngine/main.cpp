@@ -37,9 +37,9 @@ glm::vec3 lightPos = glm::vec3(0.0f, 200.0f, 0.0f);
 // Spotlight
 glm::vec3 spotlightPos = glm::vec3(0.0f, 0.0f, 0.0f);           // Position of spotlight
 glm::vec3 spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);          // Direction (pointing down)
-glm::vec3 spotlightColor = glm::vec3(1.0f, 1.0f, 0.8f);         // Warm yellow color
-float spotlightCutOff = glm::cos(glm::radians(15.0f));          // Inner cone angle
-float spotlightOuterCutOff = glm::cos(glm::radians(25.0f));     // Outer cone angle
+glm::vec3 spotlightColor = glm::vec3(1.0f, 1.0f, 0.5f);         // Bright golden color
+float spotlightCutOff = glm::cos(glm::radians(30.0f));          // Inner cone angle (wider)
+float spotlightOuterCutOff = glm::cos(glm::radians(45.0f));     // Outer cone angle (wider)
 
 // Underwater fog 
 glm::vec3 waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Deep blue
@@ -55,7 +55,8 @@ bool pressedA = false;
 bool pressedS = false;
 bool pressedD = false;
 bool usedDash = false;
-const int totalTasks = 2;
+bool nearKey = false;
+const int totalTasks = 4;
 
 
 int main()
@@ -315,10 +316,27 @@ int main()
 			ImGui::Text("Task 2: Use your dash!");
 			ImGui::Text("Press SHIFT to dash.");
 		}
+		else if (currentTask == 2)
+		{
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
+			ImGui::Text("Task 3: Find the Key!");
+			ImGui::Text("Explore the ocean to find it.");
+		}
+		else if (currentTask == 3)
+		{
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 3: COMPLETE!");
+			ImGui::Text("Task 4: Take the Key!");
+			ImGui::Text("Press E to take the key.");
+		}
 		else if (currentTask >= totalTasks)
 		{
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 3: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 4: COMPLETE!");
 		}
 
 		ImGui::End();
@@ -345,6 +363,17 @@ int main()
 					currentPlayerScale += 0.2f; // Grow bigger
 					if (currentPlayerScale > 15.0f) currentPlayerScale = 15.0f; // Limit size
 				}
+			}
+		}
+
+		if (currentTask == 2 && !nearKey)
+		{
+			float distanceToKey = glm::distance(player->position, keyPos);
+
+			if (distanceToKey < 200.0f)
+			{
+				nearKey = true;
+				currentTask = 3;
 			}
 		}
 
@@ -396,6 +425,19 @@ int main()
 		glUniform3f(glGetUniformLocation(shader.getId(), "viewPos"), camera.getCameraPosition().x, camera.getCameraPosition().y, camera.getCameraPosition().z);
 		glUniform3f(glGetUniformLocation(shader.getId(), "waterColor"), waterColor.x, waterColor.y, waterColor.z);
 		glUniform1f(glGetUniformLocation(shader.getId(), "fogDensity"), fogDensity);
+
+		if (currentTask == 2 || currentTask == 3)
+		{
+			spotlightPos = glm::vec3(keyPos.x, keyPos.y + 50.0f, keyPos.z);
+			spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);
+			spotlightColor = glm::vec3(1.0f, 1.0f, 0.5f);
+		}
+		else
+		{
+			spotlightPos = glm::vec3(0.0f, 0.0f, 0.0f);
+			spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);
+			spotlightColor = glm::vec3(1.0f, 1.0f, 0.8f);
+		}
 
 		glUniform3f(glGetUniformLocation(shader.getId(), "spotlightPos"), spotlightPos.x, spotlightPos.y, spotlightPos.z);
 		glUniform3f(glGetUniformLocation(shader.getId(), "spotlightDir"), spotlightDir.x, spotlightDir.y, spotlightDir.z);
