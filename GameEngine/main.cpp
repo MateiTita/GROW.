@@ -143,8 +143,6 @@ int main()
 
 
 
-
-
 	// check if we close the window or press the escape button
 	while (!window.isPressed(GLFW_KEY_ESCAPE) &&
 		   glfwWindowShouldClose(window.getWindow()) == 0)
