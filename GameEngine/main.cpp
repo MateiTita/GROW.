@@ -75,6 +75,8 @@ int main()
 	GLuint texfishtoeat1 = loadBMP("Resources/Textures/fishtoeat1.bmp");
 	GLuint texshell = loadBMP("Resources/Textures/shell_basecolour.bmp");
 	GLuint texChest = loadBMP("Resources/Textures/chestt.bmp");
+	GLuint texRed = loadBMP("Resources/Textures/red.bmp");
+
 
 
 
@@ -161,6 +163,11 @@ int main()
 	texturesKey[0].id = tex3;
 	texturesKey[0].type = "texture_diffuse";
 
+	std::vector<Texture> texturesRed;
+	texturesRed.push_back(Texture());
+	texturesRed[0].id = texRed;
+	texturesRed[0].type = "texture_diffuse";
+
 
 	Mesh mesh(vert, ind, textures3);
 
@@ -178,6 +185,7 @@ int main()
 	Mesh canoe = loader.loadObj("Resources/Models/canoe.obj", textures);
 	Mesh chest = loader.loadObj("Resources/Models/chest.obj", texturesChest);
 	Mesh key = loader.loadObj("Resources/Models/key.obj", texturesKey);
+	Mesh shark = loader.loadObj("Resources/Models/shark.obj", texturesRed);
 
 
 
@@ -220,6 +228,12 @@ int main()
 	glm::vec3 canoeScale = glm::vec3(56.0f, 56.0f, 56.0f);
 	float canoeRotDeg = 90.0f; // foarte des necesar
 	glm::vec3 canoeRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	// ===== SHARK =====
+	glm::vec3 sharkPos = glm::vec3(200.0f, -20.0f, -500.0f);
+	glm::vec3 sharkScale = glm::vec3(2.0f, 2.0f, 2.0f);
+	float sharkRotDeg = 0.0f;
+	glm::vec3 sharkRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
 		//fishtoeat
@@ -508,6 +522,18 @@ int main()
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		canoe.draw(shader);
+
+		// ===== SHARK =====
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, sharkPos);
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(sharkRotDeg), sharkRotAxis);
+		ModelMatrix = glm::scale(ModelMatrix, sharkScale);
+
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+		shark.draw(shader);
 
 
 		for (int i = 0; i < 7; i++)
