@@ -1,3 +1,7 @@
 ﻿  main.cpp
-C:\Users\Razvan\Desktop\grow1\GameEngine\main.cpp(327,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Razvan\Desktop\grow1\GameEngine\main.cpp(412,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\Razvan\Desktop\grow1\GameEngine\main.cpp(434,77): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\Razvan\Desktop\grow1\GameEngine\main.cpp(434,53): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\Razvan\Desktop\grow1\GameEngine\main.cpp(443,77): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\Razvan\Desktop\grow1\GameEngine\main.cpp(443,53): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   GameEngine.vcxproj -> C:\Users\Razvan\Desktop\grow1\Debug\GameEngine.exe

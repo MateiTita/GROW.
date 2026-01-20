@@ -1,4 +1,4 @@
-# Blender 5.0.1 MTL File: 'Untitled.blend'
+# Blender 5.0.1 MTL File: 'None'
 # www.blender.org
 
 newmtl 20944_Pillar_Coral_v1
@@ -11,7 +11,7 @@ Ni 1.500000
 d 1.000000
 illum 1
 
-newmtl 20944_Pillar_Coral_v1.001
+newmtl 20944_Pillar_Coral_v1.003
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -21,7 +21,7 @@ Ni 1.500000
 d 1.000000
 illum 1
 
-newmtl 21487_Gorgonian_Soft_Coral_v1
+newmtl 20944_Pillar_Coral_v1.012
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -31,7 +31,7 @@ Ni 1.500000
 d 1.000000
 illum 1
 
-newmtl 21487_Gorgonian_Soft_Coral_v1.001
+newmtl 20944_Pillar_Coral_v1.013
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -51,7 +51,7 @@ Ni 1.500000
 d 1.000000
 illum 1
 
-newmtl 21487_Gorgonian_Soft_Coral_v1.003
+newmtl 21487_Gorgonian_Soft_Coral_v1.004
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -61,7 +61,37 @@ Ni 1.500000
 d 1.000000
 illum 1
 
-newmtl 21487_Gorgonian_Soft_Coral_v1.004
+newmtl 21487_Gorgonian_Soft_Coral_v1.006
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl 21487_Gorgonian_Soft_Coral_v1.014
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl 21487_Gorgonian_Soft_Coral_v1.017
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl 21487_Gorgonian_Soft_Coral_v1.021
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000

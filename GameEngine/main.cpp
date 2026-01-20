@@ -85,7 +85,7 @@ int main()
 	GLuint texshell = loadBMP("Resources/Textures/shell_basecolour.bmp");
 	GLuint texChest = loadBMP("Resources/Textures/chestt.bmp");
 	GLuint texRed = loadBMP("Resources/Textures/red.bmp");
-
+	GLuint texShip = loadBMP("Resources/Textures/shipp.bmp");
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -173,6 +173,10 @@ int main()
 	texturesRed[0].id = texRed;
 	texturesRed[0].type = "texture_diffuse";
 
+	std::vector<Texture> texturesShip;
+	texturesShip.push_back(Texture());
+	texturesShip[0].id = texShip;
+	texturesShip[0].type = "texture_diffuse";
 
 	Mesh mesh(vert, ind, textures3);
 
@@ -192,6 +196,10 @@ int main()
 	Mesh key = loader.loadObj("Resources/Models/key.obj", texturesKey);
 	Mesh shark = loader.loadObj("Resources/Models/shark.obj", texturesRed);
 	Mesh fishkey = loader.loadObj("Resources/Models/fishkey.obj", textures3);
+	Mesh reef = loader.loadObj("Resources/Models/reef.obj"); 
+	Mesh ship = loader.loadObj("Resources/Models/ship.obj", texturesShip);
+
+
 
 	player = new Player(&fish, glm::vec3(0.0f, -40.0f, 0.0f));
 	glm::vec3 templePos = glm::vec3(0.0f, -50.0f, -620.0f);
@@ -236,6 +244,30 @@ int main()
 	glm::vec3 sharkScale = glm::vec3(1.0f, 1.0f, 1.0f);
 	float sharkRotDeg = 0.0f;
 	glm::vec3 sharkRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	// ===== REEFS  =====
+		glm::vec3 reefPositions[] = {
+		glm::vec3(-260.0f, -52.0f, -120.0f),
+		glm::vec3(-180.0f, -52.0f, -220.0f),
+		glm::vec3(-90.0f,  -52.0f, -320.0f),
+		glm::vec3(20.0f, -52.0f, -180.0f),
+		glm::vec3(110.0f, -52.0f, -260.0f),
+		glm::vec3(210.0f, -52.0f, -340.0f),
+		glm::vec3(280.0f, -52.0f, -480.0f),
+		glm::vec3(120.0f, -52.0f, -520.0f),
+		glm::vec3(-120.0f, -52.0f, -520.0f),
+		glm::vec3(-260.0f, -52.0f, -420.0f),
+	};
+
+		float reefRotY[] = { 10.f, 45.f, 90.f, 25.f, 70.f, 140.f, 5.f, 110.f, 160.f, 35.f };
+		glm::vec3 reefScale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+
+		// ===== SHip =====
+
+		glm::vec3 shipPosition = glm::vec3(0.0f, -48.0f, -650.0f);
+		glm::vec3 shipScale = glm::vec3(3.0f, 3.0f, 3.0f);
+		float shipRotY = 180.0f;
 
 
 	//fishtoeat
@@ -650,6 +682,35 @@ int main()
 			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 
 			shell.draw(shader);
+		}
+
+		//ship
+		{
+			glm::mat4 ModelMatrix = glm::mat4(1.0f);
+			ModelMatrix = glm::translate(ModelMatrix, shipPosition);
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians(shipRotY), glm::vec3(0.0f, 1.0f, 0.0f));
+			ModelMatrix = glm::scale(ModelMatrix, shipScale);
+
+			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+			glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+			ship.draw(shader);
+		}
+
+		//reefs
+		for (int i = 0; i < 10; i++)
+		{
+			glm::mat4 ModelMatrix = glm::mat4(1.0f);
+			ModelMatrix = glm::translate(ModelMatrix, reefPositions[i]);
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians(reefRotY[i]), glm::vec3(0.0f, 1.0f, 0.0f));
+			ModelMatrix = glm::scale(ModelMatrix, reefScale);
+
+			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+			glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+			reef.draw(shader);
 		}
 
 		//canoe
