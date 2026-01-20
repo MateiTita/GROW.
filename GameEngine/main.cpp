@@ -36,14 +36,14 @@ glm::vec3 lightPos = glm::vec3(0.0f, 200.0f, 0.0f);
 
 // Spotlight
 glm::vec3 spotlightPos = glm::vec3(0.0f, 0.0f, 0.0f);           // Position of spotlight
-glm::vec3 spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);          // Direction (pointing down)
+glm::vec3 spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);          // Direction 
 glm::vec3 spotlightColor = glm::vec3(1.0f, 1.0f, 0.5f);         // Bright golden color
-float spotlightCutOff = glm::cos(glm::radians(30.0f));          // Inner cone angle (wider)
-float spotlightOuterCutOff = glm::cos(glm::radians(45.0f));     // Outer cone angle (wider)
+float spotlightCutOff = glm::cos(glm::radians(30.0f));          // Inner cone angle
+float spotlightOuterCutOff = glm::cos(glm::radians(45.0f));     // Outer cone angle
 
 // Underwater fog 
 glm::vec3 waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Deep blue
-float fogDensity = 0.004f;  // How fast things fade (lower = see farther)
+float fogDensity = 0.004f;  // How fast things fade
 
 float cameraDistance = 30.0f;
 float cameraHeight = 10.0f;
@@ -180,12 +180,10 @@ int main()
 
 	Mesh mesh(vert, ind, textures3);
 
-	// Create Obj files - easier :)
-	// we can add here our textures :)
 	MeshLoaderObj loader;
 	Mesh sun = loader.loadObj("Resources/Models/sphere.obj");
-	Mesh rock = loader.loadObj("Resources/Models/cube.obj", textures2);   // Rock texture
-	Mesh coral = loader.loadObj("Resources/Models/cube.obj", textures3);  // Orange texture
+	Mesh rock = loader.loadObj("Resources/Models/cube.obj", textures2);   
+	Mesh coral = loader.loadObj("Resources/Models/cube.obj", textures3);  
 	Mesh plane = loader.loadObj("Resources/Models/plane.obj", texturesGround);
 	Mesh fish = loader.loadObj("Resources/Models/fish.obj", textures3);
 	Mesh temple = loader.loadObj("Resources/Models/temple.obj", texturesTemple);
@@ -236,7 +234,7 @@ int main()
 	// ===== CANOE (ONE) =====
 	glm::vec3 canoePos = glm::vec3(350.0f, -47.0f, -380.0f);
 	glm::vec3 canoeScale = glm::vec3(56.0f, 56.0f, 56.0f);
-	float canoeRotDeg = 90.0f; // foarte des necesar
+	float canoeRotDeg = 90.0f;
 	glm::vec3 canoeRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	// ===== SHARK =====
@@ -449,7 +447,7 @@ int main()
 
 		for (int i = 0; i < 10; i++)
 		{
-			// If the fish is NOT eaten yet...
+		
 			if (!fishtoeatEaten[i])
 			{
 				// Check distance
@@ -458,7 +456,7 @@ int main()
 					fishtoeatEaten[i] = true;   // Mark as eaten
 					fishEatenCount++;
 					currentPlayerScale += 0.2f; // Grow bigger
-					if (currentPlayerScale > 15.0f) currentPlayerScale = 15.0f; // Limit size
+					if (currentPlayerScale > 15.0f) currentPlayerScale = 15.0f; 
 				}
 			}
 		}
@@ -527,7 +525,6 @@ int main()
 		{
 			std::cout << "Pressing mouse button" << std::endl;
 		}
-		//// Code for the light ////
 
 		sunShader.use();
 
@@ -535,17 +532,12 @@ int main()
 		glm::mat4 ViewMatrix = glm::lookAt(camera.getCameraPosition(), camera.getCameraPosition() + camera.getCameraViewDirection(), camera.getCameraUp());
 
 		GLuint MatrixID = glGetUniformLocation(sunShader.getId(), "MVP");
-
-		// Test for one Obj loading = light source
-
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
 		ModelMatrix = glm::translate(ModelMatrix, lightPos);
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 		sun.draw(sunShader);
-
-		//// End code for the light ////
 
 		shader.use();
 
@@ -571,11 +563,10 @@ int main()
 			// Spotlight on the chest
 			spotlightPos = glm::vec3(chestPos.x, chestPos.y + 60.0f, chestPos.z);
 			spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);
-			spotlightColor = glm::vec3(0.5f, 1.0f, 0.5f);  // Green color to indicate goal
+			spotlightColor = glm::vec3(0.5f, 1.0f, 0.5f); 
 		}
 		else
 		{
-			// Default - no spotlight
 			spotlightPos = glm::vec3(0.0f, 0.0f, 0.0f);
 			spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);
 			spotlightColor = glm::vec3(1.0f, 1.0f, 0.8f);
@@ -740,7 +731,7 @@ int main()
 		{
 			glm::mat4 ModelMatrix = glm::mat4(1.0);
 			ModelMatrix = glm::translate(ModelMatrix, rockPositions[i]);
-			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(8.0f, 5.0f, 8.0f)); // Fixed size for rocks
+			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(8.0f, 5.0f, 8.0f)); 
 
 			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 			glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
@@ -786,7 +777,7 @@ bool CheckCollision(glm::vec3 targetPosition, float playerRadius)
 
 		if (distance < (playerRadius + rockRadius))
 		{
-			return true; // Collision!
+			return true; // Collision
 		}
 	}
 	return false;
