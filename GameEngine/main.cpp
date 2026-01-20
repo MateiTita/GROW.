@@ -61,8 +61,9 @@ float spotlightOuterCutOff = glm::cos(glm::radians(25.0f));     // Outer cone an
 glm::vec3 waterColor = glm::vec3(0.0f, 0.3f, 0.5f);  // Deep blue
 float fogDensity = 0.004f;  // How fast things fade (lower = see farther)
 
-// Third-person camera offset
-glm::vec3 cameraOffset = glm::vec3(0.0f, 10.0f, 30.0f);
+float cameraDistance = 30.0f;
+float cameraHeight = 10.0f;
+float orbitAngle = 0.0f;
 
 int currentTask = 0;
 bool pressedW = false;
@@ -258,8 +259,13 @@ int main()
 
 		player->Update(deltaTime);
 
-		glm::vec3 newCameraPos = player->position + cameraOffset;
+		float offsetX = sin(orbitAngle) * cameraDistance;
+		float offsetZ = cos(orbitAngle) * cameraDistance;
+
+		// Calculate camera position on orbit circle
+		glm::vec3 newCameraPos = player->position + glm::vec3(offsetX, cameraHeight, offsetZ);
 		camera.setCameraPosition(newCameraPos);
+
 		// Make camera look at player
 		glm::vec3 directionToPlayer = player->position - camera.getCameraPosition();
 		camera.setViewDirection(directionToPlayer);
@@ -570,7 +576,7 @@ void processKeyboardInput()
 	if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
 	{
 		player->Dash();
-		if (player->isDashing)
+		if (player->isDashing && currentTask == 1)
 		{
 			usedDash = true;
 		}
@@ -621,16 +627,21 @@ void processKeyboardInput()
 	// --- FIX END ---
 
 	// Camera Rotation
-	float rotSpeed = 30.0f * deltaTime;
-	if (window.isPressed(GLFW_KEY_LEFT)) camera.rotateOy(rotSpeed);
-	if (window.isPressed(GLFW_KEY_RIGHT)) camera.rotateOy(-rotSpeed);
-	if (window.isPressed(GLFW_KEY_UP)) camera.rotateOx(rotSpeed);
-	if (window.isPressed(GLFW_KEY_DOWN)) camera.rotateOx(-rotSpeed);
+	float rotSpeed = 2.0f * deltaTime;
+	if (window.isPressed(GLFW_KEY_LEFT))  orbitAngle += rotSpeed;
+	if (window.isPressed(GLFW_KEY_RIGHT)) orbitAngle -= rotSpeed;
+
 
 	float groundLevel = -45.0f;
 	if (player->position.y < groundLevel)
 	{
 		player->position.y = groundLevel;
+	}
+
+	float ceilingLevel = 100.0f; 
+	if (player->position.y > ceilingLevel)
+	{
+		player->position.y = ceilingLevel;
 	}
 
 	if (currentTask == 0)
