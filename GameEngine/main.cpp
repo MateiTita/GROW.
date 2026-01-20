@@ -58,7 +58,12 @@ bool usedDash = false;
 bool nearKey = false;
 bool hasKey = false;
 bool isGameOver = false;
-const int totalTasks = 4;
+bool nearChest = false;
+bool chestSearched = false;
+bool isGameWon = false;
+const int totalTasks = 6;
+int fishEatenCount = 0;
+
 
 
 int main()
@@ -316,16 +321,46 @@ int main()
 		{
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
-			ImGui::Text("Task 3: Find the Key!");
-			ImGui::Text("Explore the ocean to find it.");
+			ImGui::Text("Task 3: Eat 3 fish!");
+			ImGui::Text("Swim into smaller fish to eat them.");
+			ImGui::Text("Progress: %d / 3", fishEatenCount);
 		}
 		else if (currentTask == 3)
 		{
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 3: COMPLETE!");
-			ImGui::Text("Task 4: Take the Key!");
+			ImGui::Text("Task 4: Find the Key!");
+			ImGui::Text("Explore the ocean to find it.");
+		}
+		else if (currentTask == 4)
+		{
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 3: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 4: COMPLETE!");
+			ImGui::Text("Task 5: Take the Key!");
 			ImGui::Text("Press E to take the key.");
+		}
+		else if (currentTask == 5)
+		{
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 1: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 3: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 4: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 5: COMPLETE!");
+			ImGui::Text("Task 6: Search the chest!");
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "WARNING: Avoid the shark!");
+
+			if (nearChest)
+			{
+				ImGui::Separator();
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Press E to open the chest");
+			}
+			else
+			{
+				ImGui::Text("Follow the spotlight to the chest.");
+			}
 		}
 		else if (currentTask >= totalTasks)
 		{
@@ -333,6 +368,10 @@ int main()
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 2: COMPLETE!");
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 3: COMPLETE!");
 			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 4: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 5: COMPLETE!");
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Task 6: COMPLETE!");
+			ImGui::Separator();
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "YOU WON! All tasks complete!");
 		}
 
 		ImGui::End();
@@ -354,6 +393,8 @@ int main()
 			if (glm::distance(player->position, sharkPos) < 40.0f)
 			{
 				isGameOver = true;
+				lowHealthMode = true;
+				waterColor = glm::vec3(0.5f, 0.0f, 0.0f);
 			}
 		}
 		else
@@ -362,6 +403,15 @@ int main()
 			ImGui::Begin("GameOver", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 			ImGui::SetWindowFontScale(4.0f);
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "YOU DIED");
+			ImGui::End();
+		}
+
+		if (isGameWon)
+		{
+			ImGui::SetNextWindowPos(ImVec2(window.getWidth() / 2, window.getHeight() / 2), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			ImGui::Begin("GameWon", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+			ImGui::SetWindowFontScale(4.0f);
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "YOU WON!");
 			ImGui::End();
 		}
 
@@ -374,24 +424,25 @@ int main()
 				if (glm::distance(player->position, fishtoeatPositions[i]) < 8.0f)
 				{
 					fishtoeatEaten[i] = true;   // Mark as eaten
+					fishEatenCount++;
 					currentPlayerScale += 0.2f; // Grow bigger
 					if (currentPlayerScale > 15.0f) currentPlayerScale = 15.0f; // Limit size
 				}
 			}
 		}
 
-		if (currentTask == 2 && !nearKey)
+		if (currentTask == 3 && !nearKey)
 		{
 			float distanceToKey = glm::distance(player->position, keyPos);
 
 			if (distanceToKey < 200.0f)
 			{
 				nearKey = true;
-				currentTask = 3;
+				currentTask = 4;
 			}
 		}
 
-		if (currentTask == 3 && !hasKey)
+		if (currentTask == 4 && !hasKey)
 		{
 			float dist = glm::distance(player->position, keyPos);
 			if (dist < 20.0f)
@@ -399,11 +450,32 @@ int main()
 				if (window.isPressed(GLFW_KEY_E))
 				{
 					hasKey = true;
-					currentTask = 4;
+					currentTask = 5;
 					glm::vec3 currentPos = player->position;
 					delete player;
 					player = new Player(&fishkey, currentPos);
 				}
+			}
+		}
+
+		if (currentTask == 5 && !chestSearched)
+		{
+			float distToChest = glm::distance(player->position, chestPos);
+
+			if (distToChest < 100.0f)
+			{
+				nearChest = true;
+
+				if (window.isPressed(GLFW_KEY_E))
+				{
+					chestSearched = true;
+					currentTask = 6;
+					isGameWon = true;
+				}
+			}
+			else
+			{
+				nearChest = false;
 			}
 		}
 
@@ -456,14 +528,22 @@ int main()
 		glUniform3f(glGetUniformLocation(shader.getId(), "waterColor"), waterColor.x, waterColor.y, waterColor.z);
 		glUniform1f(glGetUniformLocation(shader.getId(), "fogDensity"), fogDensity);
 
-		if (currentTask == 2 || currentTask == 3)
+		if (currentTask == 3 || currentTask == 4)
 		{
 			spotlightPos = glm::vec3(keyPos.x, keyPos.y + 50.0f, keyPos.z);
 			spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);
 			spotlightColor = glm::vec3(1.0f, 1.0f, 0.5f);
 		}
+		else if (currentTask == 5 || currentTask == 6)
+		{
+			// Spotlight on the chest
+			spotlightPos = glm::vec3(chestPos.x, chestPos.y + 60.0f, chestPos.z);
+			spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);
+			spotlightColor = glm::vec3(0.5f, 1.0f, 0.5f);  // Green color to indicate goal
+		}
 		else
 		{
+			// Default - no spotlight
 			spotlightPos = glm::vec3(0.0f, 0.0f, 0.0f);
 			spotlightDir = glm::vec3(0.0f, -1.0f, 0.0f);
 			spotlightColor = glm::vec3(1.0f, 1.0f, 0.8f);
@@ -656,6 +736,20 @@ void processKeyboardInput()
 	if (isGameOver)
 		return;
 
+	static bool f11Pressed = false;
+	if (window.isPressed(GLFW_KEY_F11))
+	{
+		if (!f11Pressed)
+		{
+			window.toggleFullscreen();
+			f11Pressed = true;
+		}
+	}
+	else
+	{
+		f11Pressed = false;
+	}
+
 	float playerSpeed = 30.0f * deltaTime;
 
 	if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
@@ -726,6 +820,10 @@ void processKeyboardInput()
 	else if (currentTask == 1)
 	{
 		if (usedDash) currentTask = 2;
+	}
+	else if (currentTask == 2)
+	{
+		if (fishEatenCount >= 3) currentTask = 3;
 	}
 
 

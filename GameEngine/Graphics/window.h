@@ -22,6 +22,7 @@ class Window
 		bool mouseButtons[MAX_MOUSE];
 		double xpos;
 		double ypos;
+		bool isFullscreen;
 	
 	public:
 		Window(char* name, int width, int height);
@@ -36,9 +37,14 @@ class Window
 		void setMouseButton(int button, bool ok);
 		void setMousePos(double xpos, double ypos);
 		void getMousePos(double &xpos, double &ypos);
+
+		void toggleFullscreen();
+
 		bool isPressed(int key);
 		bool isMousePressed(int button);
 
 		int getWidth();
 		int getHeight();
+
+		
 };

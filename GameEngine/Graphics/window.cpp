@@ -7,6 +7,8 @@ Window::Window(char* name, int width, int height)
 	this -> height = height;
 	init();
 
+	isFullscreen = true;
+
 	for (int i = 0; i < MAX_KEYBOARD; i++)
 	{
 		this->keys[i] = false;
@@ -34,7 +36,16 @@ void Window::init()
 		std::cout << "Successfully initializing glfw!" << std::endl;
 	}
 
-	window = glfwCreateWindow(width, height, name, NULL, NULL);
+	// Get the primary monitor and its video mode
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	// Update width and height to match screen resolution
+	width = mode->width;
+	height = mode->height;
+
+	// Create fullscreen window
+	window = glfwCreateWindow(width, height, name, monitor, NULL);
 
 	if (window == NULL)
 	{
@@ -153,4 +164,22 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	Window* wind = (Window*)glfwGetWindowUserPointer(window);
 	wind->setMousePos(xpos, ypos);
+}
+
+void Window::toggleFullscreen()
+{
+	if (isFullscreen)
+	{
+		// Switch to windowed mode
+		glfwSetWindowMonitor(window, NULL, 100, 100, 800, 800, 0);
+		isFullscreen = false;
+	}
+	else
+	{
+		// Switch to fullscreen mode
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		isFullscreen = true;
+	}
 }
