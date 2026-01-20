@@ -87,6 +87,10 @@ int main()
 	GLuint tex3 = loadBMP("Resources/Textures/orange.bmp");
 	GLuint texGround = loadBMP("Resources/Textures/Ground.bmp");
 	GLuint texTemple = loadBMP("Resources/Textures/templ.bmp");
+	GLuint texfishtoeat1 = loadBMP("Resources/Textures/fishtoeat1.bmp");
+	GLuint texshell = loadBMP("Resources/Textures/shell_basecolour.bmp");
+
+
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -150,6 +154,16 @@ int main()
 	texturesTemple[0].id = texTemple;
 	texturesTemple[0].type = "texture_diffuse";
 
+	std::vector<Texture> texturesShell;
+	texturesShell.push_back(Texture());
+	texturesShell[0].id = texshell;
+	texturesShell[0].type = "texture_diffuse";
+
+	std::vector<Texture> texturesFishtoeat1;
+	texturesFishtoeat1.push_back(Texture());
+	texturesFishtoeat1[0].id = texfishtoeat1;
+	texturesFishtoeat1[0].type = "texture_diffuse";
+
 
 	Mesh mesh(vert, ind, textures3);
 
@@ -162,21 +176,45 @@ int main()
 	Mesh plane = loader.loadObj("Resources/Models/plane.obj", texturesGround);
 	Mesh fish = loader.loadObj("Resources/Models/fish.obj", textures3);
 	Mesh temple = loader.loadObj("Resources/Models/temple.obj", texturesTemple);
+	Mesh fishtoeat = loader.loadObj("Resources/Models/fishtoeat1.obj", texturesFishtoeat1);
+	Mesh shell = loader.loadObj("Resources/Models/seashell_obj.obj", texturesShell);
+	Mesh canoe = loader.loadObj("Resources/Models/canoe.obj", textures);
+
+
 
 
 	player = new Player(&fish, glm::vec3(0.0f, -40.0f, 0.0f));
-	glm::vec3 templePos = glm::vec3(0.0f, -50.0f, -120.0f);
+	glm::vec3 templePos = glm::vec3(0.0f, -50.0f, -620.0f);
 	glm::vec3 templeScale = glm::vec3(50.0f, 50.0f, 50.0f);
 
-	obstacles.push_back({ glm::vec3(-30.0f, -45.0f, -20.0f), glm::vec3(8.0f, 5.0f, 8.0f), &rock });
-		obstacles.push_back({ glm::vec3(40.0f, -47.0f, 30.0f),   glm::vec3(6.0f, 4.0f, 7.0f), &rock });
-		obstacles.push_back({ glm::vec3(15.0f, -48.0f, -50.0f),  glm::vec3(5.0f, 3.0f, 5.0f), &rock });
+	// ===== FISH TO EAT =====
+	glm::vec3 fishtoeatPos = glm::vec3(140.0f, 120.0f, -80.0f);
+	glm::vec3 fishtoeatScale = glm::vec3(12.0f, 12.0f, 12.0f);
+	float fishtoeatRotDeg = 0.0f;
+	glm::vec3 fishtoeatRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		// Corals
-		obstacles.push_back({ glm::vec3(-20.0f, -35.0f, -40.0f), glm::vec3(3.0f, 15.0f, 3.0f), &coral });
-		obstacles.push_back({ glm::vec3(25.0f, -40.0f, -10.0f),  glm::vec3(4.0f, 10.0f, 4.0f), &coral });
-		obstacles.push_back({ glm::vec3(-45.0f, -38.0f, 15.0f),  glm::vec3(2.0f, 12.0f, 2.0f), &coral });
-		obstacles.push_back({ glm::vec3(50.0f, -42.0f, -30.0f),  glm::vec3(3.0f, 8.0f, 3.0f), &coral });
+	// ===== SHELL =====
+	glm::vec3 shellPos = glm::vec3(-120.0f, -52.0f, -150.0f);
+	glm::vec3 shellScale = glm::vec3(0.5f, 0.5f, 0.5f);
+	float shellRotDeg = 0.0f;
+	glm::vec3 shellRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	// ===== CANOE (ONE) =====
+	glm::vec3 canoePos = glm::vec3(350.0f, -47.0f, -380.0f);
+	glm::vec3 canoeScale = glm::vec3(56.0f, 56.0f, 56.0f);
+	float canoeRotDeg = 90.0f; // foarte des necesar
+	glm::vec3 canoeRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+		obstacles.push_back({ glm::vec3(-30.0f, -45.0f, -20.0f), glm::vec3(8.0f, 5.0f, 8.0f), &rock });
+		obstacles.push_back({ glm::vec3(40.0f, -47.0f, 30.0f),   glm::vec3(6.0f, 4.0f, 7.0f), &rock });
+		obstacles.push_back({ glm::vec3(200.0f, -48.0f, -150.0f),  glm::vec3(5.0f, 3.0f, 5.0f), &rock });
+		obstacles.push_back({ glm::vec3(123.0f, -48.0f, -250.0f),  glm::vec3(5.0f, 3.0f, 5.0f), &rock });
+		obstacles.push_back({ glm::vec3(300.0f, -48.0f, -600.0f),  glm::vec3(5.0f, 3.0f, 5.0f), &rock });
+		obstacles.push_back({ glm::vec3(-315.0f, -48.0f, -540.0f),  glm::vec3(5.0f, 3.0f, 5.0f), &rock });
+
+
+
 
 
 	// check if we close the window or press the escape button
@@ -327,6 +365,72 @@ int main()
 		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		temple.draw(shader);
+
+		//fishtoeat
+		glm::vec3 fishtoeatPositions[] = {
+			glm::vec3(-15.0f, 135.0f, -60.0f),
+			glm::vec3(20.0f, 130.0f, -90.0f),
+			glm::vec3(-40.0f, 125.0f, -120.0f),
+			glm::vec3(35.0f, 120.0f, -150.0f),
+			glm::vec3(0.0f, 128.0f, -180.0f),
+			glm::vec3(-15.0f, 85.0f, -60.0f),
+			glm::vec3(20.0f, 80.0f, -90.0f),
+			glm::vec3(-40.0f, 65.0f, -120.0f),
+			glm::vec3(35.0f, 75.0f, -150.0f),
+			glm::vec3(0.0f, 130.0f, -180.0f),
+		};
+
+		for (int i = 0; i < 5; i++)
+		{
+			ModelMatrix = glm::mat4(1.0f);
+			ModelMatrix = glm::translate(ModelMatrix, fishtoeatPositions[i]);
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians(fishtoeatRotDeg), fishtoeatRotAxis);
+			ModelMatrix = glm::scale(ModelMatrix, fishtoeatScale);
+
+			MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+			glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+			fishtoeat.draw(shader);
+		}
+
+
+		//shell
+		glm::vec3 shellPositions[] = {
+			glm::vec3(-200.0f, -52.0f, -210.0f),
+			glm::vec3(-350.0f, -52.0f, -130.0f),
+			glm::vec3(100.0f, -52.0f, -90.0f),
+			glm::vec3(250.0f, -52.0f, -250.0f),
+			glm::vec3(450.0f, -52.0f, -320.0f),
+			glm::vec3(-250.0f, -52.0f, -250.0f),
+			glm::vec3(-450.0f, -52.0f, -320.0f),
+		};
+
+		for (int i = 0; i < 5; i++)
+		{
+			ModelMatrix = glm::mat4(1.0f);
+			ModelMatrix = glm::translate(ModelMatrix, shellPositions[i]);
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians(shellRotDeg), shellRotAxis);
+			ModelMatrix = glm::scale(ModelMatrix, shellScale);
+
+			MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+			glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+			shell.draw(shader);
+		}
+
+		//canoe
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, canoePos);
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(canoeRotDeg), canoeRotAxis);
+		ModelMatrix = glm::scale(ModelMatrix, canoeScale);
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		canoe.draw(shader);
+
+
 
 		for (const auto& obj : obstacles)
 		{
