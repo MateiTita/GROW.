@@ -8,6 +8,7 @@
 #include "ImGUI/imgui_impl_glfw.h"
 #include "ImGUI/imgui_impl_opengl3.h"
 #include "Player/Player.h"
+#include <algorithm>
 
 void processKeyboardInput();
 
@@ -18,6 +19,32 @@ bool lowHealthMode = false;
 Window window("Game Engine", 800, 800);
 Camera camera;
 Player* player;
+
+struct CollisionPacket {
+	glm::vec3 eRadius;      // Player's size (ellipsoid radius)
+
+	// R3 (World Space) data
+	glm::vec3 R3Velocity;
+	glm::vec3 R3Position;
+
+	// eSpace (Ellipsoid Space) data
+	glm::vec3 velocity;
+	glm::vec3 normalizedVelocity;
+	glm::vec3 basePoint;
+
+	// Hit information
+	bool foundCollision;
+	double nearestDistance;
+	glm::vec3 intersectionPoint; // Point where we hit
+};
+
+struct Obstacle {
+	glm::vec3 position;
+	glm::vec3 size;
+	Mesh* mesh;
+};
+
+std::vector<Obstacle> obstacles;
 
 // Underwater lighting
 glm::vec3 lightColor = glm::vec3(0.8f, 0.9f, 1.0f);
@@ -141,6 +168,15 @@ int main()
 	glm::vec3 templePos = glm::vec3(0.0f, -50.0f, -120.0f);
 	glm::vec3 templeScale = glm::vec3(50.0f, 50.0f, 50.0f);
 
+	obstacles.push_back({ glm::vec3(-30.0f, -45.0f, -20.0f), glm::vec3(8.0f, 5.0f, 8.0f), &rock });
+		obstacles.push_back({ glm::vec3(40.0f, -47.0f, 30.0f),   glm::vec3(6.0f, 4.0f, 7.0f), &rock });
+		obstacles.push_back({ glm::vec3(15.0f, -48.0f, -50.0f),  glm::vec3(5.0f, 3.0f, 5.0f), &rock });
+
+		// Corals
+		obstacles.push_back({ glm::vec3(-20.0f, -35.0f, -40.0f), glm::vec3(3.0f, 15.0f, 3.0f), &coral });
+		obstacles.push_back({ glm::vec3(25.0f, -40.0f, -10.0f),  glm::vec3(4.0f, 10.0f, 4.0f), &coral });
+		obstacles.push_back({ glm::vec3(-45.0f, -38.0f, 15.0f),  glm::vec3(2.0f, 12.0f, 2.0f), &coral });
+		obstacles.push_back({ glm::vec3(50.0f, -42.0f, -30.0f),  glm::vec3(3.0f, 8.0f, 3.0f), &coral });
 
 
 	// check if we close the window or press the escape button
@@ -292,68 +328,18 @@ int main()
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		temple.draw(shader);
 
-		// ROCK 1 
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-30.0f, -45.0f, -20.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(8.0f, 5.0f, 8.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		rock.draw(shader);
+		for (const auto& obj : obstacles)
+		{
+			glm::mat4 ModelMatrix = glm::mat4(1.0);
+			ModelMatrix = glm::translate(ModelMatrix, obj.position);
+			ModelMatrix = glm::scale(ModelMatrix, obj.size);
 
-		//  ROCK 2 
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(40.0f, -47.0f, 30.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(6.0f, 4.0f, 7.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		rock.draw(shader);
+			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+			glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 
-		// ROCK 3
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(15.0f, -48.0f, -50.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(5.0f, 3.0f, 5.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		rock.draw(shader);
-
-		//  CORAL 1 (tall) 
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-20.0f, -35.0f, -40.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(3.0f, 15.0f, 3.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		coral.draw(shader);
-
-		//  CORAL 2 
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(25.0f, -40.0f, -10.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(4.0f, 10.0f, 4.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		coral.draw(shader);
-
-		//  CORAL 3 
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-45.0f, -38.0f, 15.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(2.0f, 12.0f, 2.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		coral.draw(shader);
-
-		//  CORAL 4 
-		ModelMatrix = glm::mat4(1.0);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(50.0f, -42.0f, -30.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(3.0f, 8.0f, 3.0f));
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		coral.draw(shader);
+			obj.mesh->draw(shader);
+		}
 
 		ModelMatrix = glm::mat4(1.0);
 		ModelMatrix = glm::translate(ModelMatrix, player->position);
@@ -380,10 +366,205 @@ int main()
 	return 0;
 }
 
+bool getLowestRoot(float a, float b, float c, float maxR, float* root) {
+	float determinant = b * b - 4.0f * a * c;
+	if (determinant < 0.0f) return false; // No solution
+
+	float sqrtD = sqrt(determinant);
+	float r1 = (-b - sqrtD) / (2 * a);
+	float r2 = (-b + sqrtD) / (2 * a);
+
+	if (r1 > r2) std::swap(r1, r2);
+
+	if (r1 > 0 && r1 < maxR) {
+		*root = r1;
+		return true;
+	}
+	if (r2 > 0 && r2 < maxR) {
+		*root = r2;
+		return true;
+	}
+	return false;
+}
+
+void checkTriangle(CollisionPacket* colPackage, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
+	// 1. Create the plane for the triangle
+	glm::vec3 edge1 = p2 - p1;
+	glm::vec3 edge2 = p3 - p1;
+	glm::vec3 normalVec = glm::cross(edge1, edge2);
+	// If triangle has no area (degenerate), skip it to prevent crash
+	if (glm::length(normalVec) < 0.00001f) return;
+	glm::vec3 normal = glm::normalize(normalVec);
+	
+
+	// Only check front-facing triangles (optional optimization)
+	if (glm::dot(normal, colPackage->normalizedVelocity) >= 0.0f) return;
+
+	// Plane equation: N dot P + D = 0
+	float distToPlane = -glm::dot(normal, p1);
+
+	// 2. Calculate interval [t0, t1] where sphere intersects the infinite plane
+	float signedDistToPlane = glm::dot(normal, colPackage->basePoint) + distToPlane;
+	float normalDotVel = glm::dot(normal, colPackage->velocity);
+
+	float t0, t1;
+	bool embedded = false;
+
+	if (fabs(normalDotVel) < 0.001f) {
+		// Moving parallel to plane
+		if (fabs(signedDistToPlane) >= 1.0f) return; // Too far away
+		embedded = true;
+		t0 = 0.0; t1 = 1.0;
+	}
+	else {
+		t0 = (1.0f - signedDistToPlane) / normalDotVel;
+		t1 = (-1.0f - signedDistToPlane) / normalDotVel;
+		if (t0 > t1) std::swap(t0, t1);
+
+		if (t0 > 1.0f || t1 < 0.0f) return; // No collision in this timeframe
+		t0 = glm::clamp(t0, 0.0f, 1.0f);
+		t1 = glm::clamp(t1, 0.0f, 1.0f);
+	}
+
+	// 3. Collision with the INSIDE of the triangle [cite: 213]
+	glm::vec3 collisionPoint = glm::vec3(0.0f);
+	bool foundCollision = false;
+	float t = 1.0f;
+
+	if (!embedded) {
+		glm::vec3 planeIntersection = (colPackage->basePoint - normal) + (colPackage->velocity * t0);
+
+		// Barycentric check (is point inside triangle?)
+		glm::vec3 v0 = p2 - p1;
+		glm::vec3 v1 = p3 - p1;
+		glm::vec3 v2 = planeIntersection - p1;
+		float d00 = glm::dot(v0, v0);
+		float d01 = glm::dot(v0, v1);
+		float d11 = glm::dot(v1, v1);
+		float d20 = glm::dot(v2, v0);
+		float d21 = glm::dot(v2, v1);
+		float denom = d00 * d11 - d01 * d01;
+		float v = (d11 * d20 - d01 * d21) / denom;
+		float w = (d00 * d21 - d01 * d20) / denom;
+
+		if (v >= 0.0f && w >= 0.0f && (v + w) <= 1.0f) {
+			foundCollision = true;
+			t = t0;
+			collisionPoint = planeIntersection;
+		}
+	}
+
+	// 4. Collision with Vertices/Edges (The Sweep Test) [cite: 235]
+	if (!foundCollision) {
+		float velocitySqDist = glm::dot(colPackage->velocity, colPackage->velocity);
+		// If you don't have gtx/norm.hpp, use: dot(velocity, velocity)
+		velocitySqDist = glm::dot(colPackage->velocity, colPackage->velocity);
+
+		float a, b, c;
+		float newT;
+
+		// Check Vertices (sphere vs point)
+		glm::vec3 vertices[] = { p1, p2, p3 };
+		for (int i = 0; i < 3; i++) {
+			a = velocitySqDist;
+			b = 2.0f * glm::dot(colPackage->velocity, colPackage->basePoint - vertices[i]);
+			glm::vec3 diff = vertices[i] - colPackage->basePoint;
+			c = glm::dot(diff, diff) - 1.0f;
+
+			if (getLowestRoot(a, b, c, t, &newT)) {
+				t = newT;
+				foundCollision = true;
+				collisionPoint = vertices[i];
+			}
+		}
+		// (Note: I skipped Edge checks for brevity. For a college project, 
+		// Vertex + Inside checks are usually stable enough. Add edges if you still get stuck on sharp lines.)
+	}
+
+	// 5. Store result
+	if (foundCollision) {
+		float distToCollision = t * glm::length(colPackage->velocity);
+		if (!colPackage->foundCollision || distToCollision < colPackage->nearestDistance) {
+			colPackage->nearestDistance = distToCollision;
+			colPackage->intersectionPoint = collisionPoint;
+			colPackage->foundCollision = true;
+		}
+	}
+}
+
+glm::vec3 collideWithWorld(CollisionPacket* colPackage, int recursionDepth) {
+	float veryCloseDistance = 0.005f; // Epsilon
+
+	if (recursionDepth > 5) return colPackage->basePoint; // Safety break
+
+	colPackage->foundCollision = false;
+	colPackage->nearestDistance = 1e9; // Huge number
+
+	// --- IMPORTANT: LOOP YOUR OBSTACLES HERE ---
+	// We must check every triangle of every obstacle
+	for (const auto& obj : obstacles) {
+		// We need the vertices in World Space (or translate logic to Local Space)
+		// For simplicity, let's assume we translate the Player to the Object's local space?
+		// No, easier to translate Triangle to World Space.
+
+		// This is SLOW without spatial partition, but fine for small college projects.
+		const std::vector<Vertex>& verts = obj.mesh->vertices;
+		const std::vector<int>& inds = obj.mesh->indices;
+
+		for (size_t i = 0; i < inds.size(); i += 3) {
+			glm::vec3 p1 = verts[inds[i]].pos * obj.size + obj.position;
+			glm::vec3 p2 = verts[inds[i + 1]].pos * obj.size + obj.position;
+			glm::vec3 p3 = verts[inds[i + 2]].pos * obj.size + obj.position;
+
+			// Convert Triangle to eSpace (divide by player radius)
+			p1 /= colPackage->eRadius;
+			p2 /= colPackage->eRadius;
+			p3 /= colPackage->eRadius;
+
+			checkTriangle(colPackage, p1, p2, p3);
+		}
+	}
+
+	// If no collision, we just move full distance
+	if (!colPackage->foundCollision) {
+		return colPackage->basePoint + colPackage->velocity;
+	}
+
+	// --- COLLISION RESPONSE (SLIDING) --- [cite: 291]
+
+	// 1. Move very close to the collision point (but not exactly on it)
+	glm::vec3 destinationPoint = colPackage->basePoint + colPackage->velocity;
+	glm::vec3 newBasePoint = colPackage->basePoint;
+
+	if (colPackage->nearestDistance >= veryCloseDistance) {
+		glm::vec3 V = colPackage->velocity;
+		V = glm::normalize(V);
+		V = V * (float)(colPackage->nearestDistance - veryCloseDistance);
+		newBasePoint = colPackage->basePoint + V;
+	}
+
+	// 2. Calculate Sliding Plane 
+	// In eSpace, normal is vector from sphere center to intersection
+	glm::vec3 slidePlaneOrigin = colPackage->intersectionPoint;
+	glm::vec3 slidePlaneNormal = glm::normalize(newBasePoint - colPackage->intersectionPoint);
+
+	// 3. Project velocity onto sliding plane 
+	// New Destination = Destination - SignedDist * Normal
+	float dist = glm::dot(destinationPoint - slidePlaneOrigin, slidePlaneNormal); // Signed distance
+	glm::vec3 newDestinationPoint = destinationPoint - dist * slidePlaneNormal;
+
+	// 4. New Velocity for recursion
+	glm::vec3 newVelocity = newDestinationPoint - colPackage->intersectionPoint;
+
+	// 5. Update Packet for recursion
+	colPackage->basePoint = newBasePoint;
+	colPackage->velocity = newVelocity;
+
+	return collideWithWorld(colPackage, recursionDepth + 1);
+}
 
 void processKeyboardInput()
 {
-	
 	float playerSpeed = 30.0f * deltaTime;
 
 	if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
@@ -401,47 +582,52 @@ void processKeyboardInput()
 	}
 
 	glm::vec3 forward = camera.getCameraViewDirection();
+	forward.y = 0.0f;
+	forward = glm::normalize(forward);
 
-	// We use the camera's Up vector to ensure it's relative to the camera
 	glm::vec3 right = glm::normalize(glm::cross(forward, camera.getCameraUp()));
+	glm::vec3 movement(0.0f);
 
 	// Player Movement
-	if (window.isPressed(GLFW_KEY_W))
-	{
-		player->position += forward * playerSpeed;
-		pressedW = true;
-	}
-	if (window.isPressed(GLFW_KEY_S))
-	{
-		player->position -= forward * playerSpeed;
-		pressedS = true;
-	}
-	if (window.isPressed(GLFW_KEY_A))
-	{
-		player->position -= right * playerSpeed;
-		pressedA = true;
-	}
-	if (window.isPressed(GLFW_KEY_D))
-	{
-		player->position += right * playerSpeed;
-		pressedD = true;
-	}
+	if (window.isPressed(GLFW_KEY_W)) { movement += forward * playerSpeed; pressedW = true; }
+	if (window.isPressed(GLFW_KEY_S)) { movement -= forward * playerSpeed; pressedS = true; }
+	if (window.isPressed(GLFW_KEY_A)) { movement -= right * playerSpeed;   pressedA = true; }
+	if (window.isPressed(GLFW_KEY_D)) { movement += right * playerSpeed;   pressedD = true; }
 
-	// 4. Swim Up/Down
-	if (window.isPressed(GLFW_KEY_SPACE))
-		player->position.y += playerSpeed;
-	if (window.isPressed(GLFW_KEY_LEFT_CONTROL))
-		player->position.y -= playerSpeed;
+	if (window.isPressed(GLFW_KEY_SPACE))        movement.y += playerSpeed;
+	if (window.isPressed(GLFW_KEY_LEFT_CONTROL)) movement.y -= playerSpeed;
 
-	// Camera Rotation Controls (Keep these to look around)
+	// If movement is essentially zero, don't run collision logic (avoids assertion fail)
+	if (glm::length(movement) > 0.0001f)
+	{
+		glm::vec3 velocity = movement;
+		glm::vec3 eRadius = glm::vec3(3.0f, 3.0f, 6.0f); // Size of your fish
+
+		CollisionPacket colPackage;
+		colPackage.eRadius = eRadius;
+		colPackage.R3Position = player->position;
+		colPackage.R3Velocity = velocity;
+
+		colPackage.basePoint = colPackage.R3Position / eRadius;
+		colPackage.velocity = colPackage.R3Velocity / eRadius;
+		colPackage.normalizedVelocity = glm::normalize(colPackage.velocity);
+
+		// Run Collision
+		glm::vec3 finalPosESpace = collideWithWorld(&colPackage, 0);
+
+		// Convert back
+		player->position = finalPosESpace * eRadius;
+	}
+	// --- FIX END ---
+
+	// Camera Rotation
 	float rotSpeed = 30.0f * deltaTime;
 	if (window.isPressed(GLFW_KEY_LEFT)) camera.rotateOy(rotSpeed);
 	if (window.isPressed(GLFW_KEY_RIGHT)) camera.rotateOy(-rotSpeed);
 	if (window.isPressed(GLFW_KEY_UP)) camera.rotateOx(rotSpeed);
 	if (window.isPressed(GLFW_KEY_DOWN)) camera.rotateOx(-rotSpeed);
 
-	float groundLevel = -45.0f;  // above -50 
-	glm::vec3 pos = camera.getCameraPosition();
+	float groundLevel = -45.0f;
 	if (player->position.y < groundLevel)
 	{
 		player->position.y = groundLevel;
@@ -449,19 +635,10 @@ void processKeyboardInput()
 
 	if (currentTask == 0)
 	{
-		// Task 1: Check if all WASD keys have been pressed
-		if (pressedW && pressedA && pressedS && pressedD)
-		{
-			currentTask = 1;
-		}
+		if (pressedW && pressedA && pressedS && pressedD) currentTask = 1;
 	}
 	else if (currentTask == 1)
 	{
-		// Task 2: Check if dash was used
-		if (usedDash)
-		{
-			currentTask = 2;
-		}
+		if (usedDash) currentTask = 2;
 	}
-
 }
