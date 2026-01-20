@@ -56,11 +56,14 @@ bool pressedS = false;
 bool pressedD = false;
 bool usedDash = false;
 bool nearKey = false;
+bool hasKey = false;
+bool isGameOver = false;
 const int totalTasks = 4;
 
 
 int main()
 {
+
 	glClearColor(0.0f, 0.2f, 0.4f, 1.0f);
 
 	// building and compiling shader program
@@ -77,10 +80,6 @@ int main()
 	GLuint texshell = loadBMP("Resources/Textures/shell_basecolour.bmp");
 	GLuint texChest = loadBMP("Resources/Textures/chestt.bmp");
 	GLuint texRed = loadBMP("Resources/Textures/red.bmp");
-
-
-
-
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -187,10 +186,7 @@ int main()
 	Mesh chest = loader.loadObj("Resources/Models/chest.obj", texturesChest);
 	Mesh key = loader.loadObj("Resources/Models/key.obj", texturesKey);
 	Mesh shark = loader.loadObj("Resources/Models/shark.obj", texturesRed);
-
-
-
-
+	Mesh fishkey = loader.loadObj("Resources/Models/fishkey.obj", textures3);
 
 	player = new Player(&fish, glm::vec3(0.0f, -40.0f, 0.0f));
 	glm::vec3 templePos = glm::vec3(0.0f, -50.0f, -620.0f);
@@ -232,26 +228,26 @@ int main()
 
 	// ===== SHARK =====
 	glm::vec3 sharkPos = glm::vec3(200.0f, -20.0f, -500.0f);
-	glm::vec3 sharkScale = glm::vec3(2.0f, 2.0f, 2.0f);
+	glm::vec3 sharkScale = glm::vec3(1.0f, 1.0f, 1.0f);
 	float sharkRotDeg = 0.0f;
 	glm::vec3 sharkRotAxis = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
-		//fishtoeat
-		glm::vec3 fishtoeatPositions[] = {
-			glm::vec3(-15.0f, 56.0f, -60.0f),
-			glm::vec3(20.0f, 67.0f, -90.0f),
-			glm::vec3(-40.0f, 67.0f, -120.0f),
-			glm::vec3(35.0f, 69.0f, -150.0f),
-			glm::vec3(0.0f, 73.0f, -180.0f),
-			glm::vec3(-15.0f, 57.0f, -60.0f),
-			glm::vec3(20.0f, 65.0f, -90.0f),
-			glm::vec3(-40.0f, 65.0f, -120.0f),
-			glm::vec3(35.0f, 57.0f, -150.0f),
-			glm::vec3(0.0f, 96.0f, -180.0f),
-		};
+	//fishtoeat
+	glm::vec3 fishtoeatPositions[] = {
+	glm::vec3(-15.0f, -10.0f, -60.0f),
+	glm::vec3(20.0f, -5.0f, -90.0f),
+	glm::vec3(-40.0f, -20.0f, -120.0f),
+	glm::vec3(35.0f, 0.0f, -150.0f),
+	glm::vec3(0.0f, -15.0f, -180.0f),
+	glm::vec3(-25.0f, 10.0f, -70.0f),
+	glm::vec3(40.0f, 20.0f, -100.0f),
+	glm::vec3(-50.0f, 15.0f, -130.0f),
+	glm::vec3(55.0f, 25.0f, -160.0f),
+	glm::vec3(10.0f, 30.0f, -190.0f),
+	};
 
-		bool fishtoeatEaten[10] = { false };
+	bool fishtoeatEaten[10] = { false };
 		
 
 	// check if we close the window or press the escape button
@@ -348,8 +344,26 @@ int main()
 
 		processKeyboardInput();
 
+		if(!isGameOver)
+		{
+			player->Update(deltaTime);
+		}
 
-		player->Update(deltaTime);
+		if (!isGameOver)
+		{
+			if (glm::distance(player->position, sharkPos) < 40.0f)
+			{
+				isGameOver = true;
+			}
+		}
+		else
+		{
+			ImGui::SetNextWindowPos(ImVec2(window.getWidth() / 2, window.getHeight() / 2), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			ImGui::Begin("GameOver", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+			ImGui::SetWindowFontScale(4.0f);
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "YOU DIED");
+			ImGui::End();
+		}
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -374,6 +388,22 @@ int main()
 			{
 				nearKey = true;
 				currentTask = 3;
+			}
+		}
+
+		if (currentTask == 3 && !hasKey)
+		{
+			float dist = glm::distance(player->position, keyPos);
+			if (dist < 20.0f)
+			{
+				if (window.isPressed(GLFW_KEY_E))
+				{
+					hasKey = true;
+					currentTask = 4;
+					glm::vec3 currentPos = player->position;
+					delete player;
+					player = new Player(&fishkey, currentPos);
+				}
 			}
 		}
 
@@ -484,33 +514,20 @@ int main()
 
 		//Key
 
-		ModelMatrix = glm::mat4(1.0f);
-		float keyBob = sin(t * keyFloatSpeed) * keyFloatDistance;
-		float keySpinDeg = t * keySpinSpeed * 10;
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(keyPos.x, keyPos.y + keyBob, keyPos.z));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(keySpinDeg), keyRotAxis);
-		ModelMatrix = glm::scale(ModelMatrix, keyScale);
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-		glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		if (!hasKey) 
+		{
+			ModelMatrix = glm::mat4(1.0f);
+			float keyBob = sin(t * keyFloatSpeed) * keyFloatDistance;
+			float keySpinDeg = t * keySpinSpeed * 10;
+			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(keyPos.x, keyPos.y + keyBob, keyPos.z));
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians(keySpinDeg), keyRotAxis);
+			ModelMatrix = glm::scale(ModelMatrix, keyScale);
+			MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+			glUniformMatrix4fv(MatrixID2, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 
-		key.draw(shader);
-
-
-
-		//fishtoeat
-		glm::vec3 fishtoeatPositions[] = {
-			glm::vec3(-15.0f, 135.0f, -60.0f),
-			glm::vec3(20.0f, 130.0f, -90.0f),
-			glm::vec3(-40.0f, 125.0f, -120.0f),
-			glm::vec3(35.0f, 120.0f, -150.0f),
-			glm::vec3(0.0f, 128.0f, -180.0f),
-			glm::vec3(-15.0f, 85.0f, -60.0f),
-			glm::vec3(20.0f, 80.0f, -90.0f),
-			glm::vec3(-40.0f, 65.0f, -120.0f),
-			glm::vec3(35.0f, 75.0f, -150.0f),
-			glm::vec3(0.0f, 130.0f, -180.0f),
-		};
+			key.draw(shader);
+		}
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -636,6 +653,9 @@ bool CheckCollision(glm::vec3 targetPosition, float playerRadius)
 
 void processKeyboardInput()
 {
+	if (isGameOver)
+		return;
+
 	float playerSpeed = 30.0f * deltaTime;
 
 	if (window.isPressed(GLFW_KEY_LEFT_SHIFT))
@@ -707,4 +727,6 @@ void processKeyboardInput()
 	{
 		if (usedDash) currentTask = 2;
 	}
+
+
 }
